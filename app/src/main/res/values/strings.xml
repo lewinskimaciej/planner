@@ -1,4 +1,13 @@
 <resources>
     <string name="app_name">Planner</string>
     <string name="api_path">TODO</string>
+
+    <!--DIALOG COMMONS-->
+    <string name="alert_dialog_oops">Oops</string>
+    <string name="alert_dialog_problem">Encountered a problem</string>
+    <string name="common_dialog_ok">OK</string>
+    <string name="common_dialog_cancel">Cancel</string>
+    <string name="common_dialog_back">Back</string>
+    <string name="unexpected_error">Unexpected error</string>
+    <string name="no_internet_connection">No internet connection</string>
 </resources>
