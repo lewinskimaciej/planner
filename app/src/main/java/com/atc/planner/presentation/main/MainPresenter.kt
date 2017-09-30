@@ -10,8 +10,8 @@ import com.google.android.gms.maps.model.LatLng
 import java.io.Serializable
 import javax.inject.Inject
 
-class MainPresenter @Inject constructor(val stringProvider: StringProvider,
-                                        val locationProvider: LocationProvider)
+class MainPresenter @Inject constructor(private val stringProvider: StringProvider,
+                                        private val locationProvider: LocationProvider)
     : BasePresenter<MainView>() {
 
     companion object {
