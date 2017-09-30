@@ -10,4 +10,6 @@
     <string name="common_dialog_back">Back</string>
     <string name="unexpected_error">Unexpected error</string>
     <string name="no_internet_connection">No internet connection</string>
+    <string name="location_permission_refused_dialog_title">Location permissions is needed</string>
+    <string name="location_permission_refused_dialog_contemt">In order to properly work and provide you with ideas, we need to know your location</string>
 </resources>

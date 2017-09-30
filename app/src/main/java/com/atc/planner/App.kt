@@ -6,6 +6,7 @@ import dagger.android.support.DaggerApplication
 import de.javakaffee.kryoserializers.jodatime.JodaDateTimeSerializer
 import io.paperdb.Paper
 import org.joda.time.DateTime
+import timber.log.Timber
 
 
 class App : DaggerApplication() {
@@ -16,5 +17,9 @@ class App : DaggerApplication() {
 
         Paper.addSerializer(DateTime::class.java, JodaDateTimeSerializer())
         Paper.init(this)
+
+        if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())
+        }
     }
 }

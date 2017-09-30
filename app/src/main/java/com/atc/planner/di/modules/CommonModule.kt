@@ -3,6 +3,7 @@ package com.atc.planner.di.modules
 
 import android.app.Application
 import android.content.Context
+import com.atc.planner.App
 import com.atc.planner.R
 import com.atc.planner.commons.*
 import com.atc.planner.data.api.CustomInterceptor
@@ -93,4 +94,8 @@ class CommonModule {
             override fun convert(value: ResponseBody) = if (value.contentLength() != 0L || value.contentLength() != -1L) nextResponseBodyConverter.convert(value) else null
         }
     }
+
+    @Provides
+    @Singleton
+    fun locationProvider(app: App): LocationProvider = LocationProviderImpl(app)
 }
