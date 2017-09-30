@@ -7,6 +7,11 @@ android {
     compileSdkVersion 26
     buildToolsVersion "26.0.1"
 
+    Properties localProperties = new Properties()
+    if (project.rootProject.file("local.properties").exists()) {
+        localProperties.load(project.rootProject.file("local.properties").newDataInputStream())
+    }
+
     defaultConfig {
         applicationId "com.atc.planner"
         minSdkVersion 21
@@ -14,9 +19,12 @@ android {
         versionCode 1
         versionName "0.0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
         vectorDrawables.useSupportLibrary = true
+
+        resValue "string", "places_api_key", System.getenv("PLACES_API_KEY") ?: localProperties.getProperty("PLACES_API_KEY") ?: ""
+
     }
+
     buildTypes {
         release {
             minifyEnabled true
@@ -33,6 +41,8 @@ dependencies {
     implementation 'com.android.support:design:26.1.0'
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+
+    implementation 'com.google.android.gms:play-services-places:11.4.0'
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 
