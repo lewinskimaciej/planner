@@ -39,7 +39,7 @@ class MainPresenter @Inject constructor(private val stringProvider: StringProvid
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe({
-                            d { it }
+
                         }, ::e)
             }
         }, {
