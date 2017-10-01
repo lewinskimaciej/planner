@@ -6,7 +6,7 @@ import android.content.Context
 import com.atc.planner.App
 import com.atc.planner.R
 import com.atc.planner.commons.*
-import com.atc.planner.data.api.CustomInterceptor
+import com.atc.planner.commons.CustomInterceptor
 import com.atc.planner.di.qualifiers.NullOnEmptyConverterFactory
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder

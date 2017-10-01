@@ -1,4 +1,4 @@
-package com.atc.planner.data.api
+package com.atc.planner.commons
 
 import android.annotation.TargetApi
 import android.content.Context

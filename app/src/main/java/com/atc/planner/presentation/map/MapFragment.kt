@@ -1,18 +1,18 @@
 package com.atc.planner.presentation.map
 
-import android.Manifest
 import android.os.Bundle
 import com.atc.planner.R
 import com.atc.planner.presentation.base.BaseMvpFragment
-import com.github.jksiezni.permissive.Permissive
+import com.github.ajalt.timberkt.e
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.tbruyelle.rxpermissions2.RxPermissions
 import javax.inject.Inject
 
-class MapFragment: BaseMvpFragment<MapView, MapPresenter>(), MapView, OnMapReadyCallback {
+class MapFragment : BaseMvpFragment<MapView, MapPresenter>(), MapView, OnMapReadyCallback {
 
     override val layoutResId: Int
         get() = R.layout.fragment_map
@@ -22,21 +22,24 @@ class MapFragment: BaseMvpFragment<MapView, MapPresenter>(), MapView, OnMapReady
 
     var map: GoogleMap? = null
 
+    lateinit var rxPermissions: RxPermissions
+
     override fun createPresenter(): MapPresenter = mapPresenter
 
     override fun onViewCreated(savedInstanceState: Bundle?) {
+        rxPermissions = RxPermissions(activity)
         showMap()
     }
 
     override fun askForLocationPermission() {
-        Permissive.Request(Manifest.permission.ACCESS_FINE_LOCATION)
-                .whenPermissionsGranted {
-                    presenter?.onPermissionsGranted()
-                }
-                .whenPermissionsRefused {
-                    presenter?.onPermissionsRefused()
-                }
-                .execute(activity)
+        rxPermissions.request(android.Manifest.permission.ACCESS_FINE_LOCATION)
+                .subscribe({
+                    if (it) {
+                        presenter?.onPermissionsGranted()
+                    } else {
+                        presenter?.onPermissionsRefused()
+                    }
+                }, ::e)
     }
 
     private fun showMap() {

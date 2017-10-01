@@ -1,10 +1,10 @@
 package com.atc.planner.presentation.map
 
-import android.location.Location
 import com.atc.planner.R
 import com.atc.planner.commons.LocationProvider
 import com.atc.planner.commons.StringProvider
 import com.atc.planner.di.scopes.FragmentScope
+import com.atc.planner.extensions.asLatLng
 import com.atc.planner.presentation.base.BasePresenter
 import com.github.ajalt.timberkt.e
 import com.google.android.gms.maps.model.LatLng
@@ -20,7 +20,7 @@ class MapPresenter @Inject constructor(private val stringProvider: StringProvide
         private val defaultLocation = LatLng(51.108964, 17.060151)
     }
 
-    private var currentLocation: Location? = null
+    private var currentLocation: LatLng? = null
     private var isMapReady = false
 
     override fun onViewCreated(data: Serializable?) {
@@ -33,29 +33,29 @@ class MapPresenter @Inject constructor(private val stringProvider: StringProvide
 
     fun onPermissionsRefused() {
         view?.showAlertDialog(stringProvider.getString(R.string.location_permission_refused_dialog_title),
-                stringProvider.getString(R.string.location_permission_refused_dialog_contemt))
+                stringProvider.getString(R.string.location_permission_refused_dialog_content))
         view?.askForLocationPermission()
     }
 
     fun onMapReady() {
         isMapReady = true
 
-        locationProvider.getLastLocation({
-            currentLocation = it
-            showCurrentLocation()
-        }, {
-            it?.let {
-                e(it)
-                view?.showErrorToast()
-                showDefaultLocation()
-            }
-        })
+//        locationProvider.getLastLocation({
+//            currentLocation = it?.asLatLng()
+//            showCurrentLocation()
+//        }, {
+//            it.let {
+//                e(it)
+//                view?.showErrorToast()
+//                showDefaultLocation()
+//            }
+//        })
     }
 
     private fun showCurrentLocation() {
         if (currentLocation != null) {
             currentLocation?.let {
-                view?.showLocationOnMap(LatLng(it.latitude, it.longitude))
+                view?.showLocationOnMap(it)
             }
         } else {
             showDefaultLocation()
