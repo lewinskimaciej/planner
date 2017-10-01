@@ -23,10 +23,10 @@
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:contentDescription="@null"
+            android:src="@drawable/ic_insert_photo_black_33_24dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:src="@mipmap/ic_launcher" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/item_title"

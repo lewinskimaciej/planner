@@ -12,7 +12,7 @@ import eu.davidea.flexibleadapter.items.IHolder
 import eu.davidea.viewholders.FlexibleViewHolder
 import kotlinx.android.synthetic.main.item_holder_place.view.*
 
-class PlaceItem(var placeItemModel: PlaceItemModel)
+class PlaceItem(private var placeItemModel: PlaceItemModel)
     : AbstractFlexibleItem<PlaceItem.PlaceItemViewHolder>(),
         IHolder<PlaceItemModel> {
     override fun getLayoutRes(): Int = R.layout.item_holder_place
@@ -25,9 +25,19 @@ class PlaceItem(var placeItemModel: PlaceItemModel)
     override fun getModel(): PlaceItemModel = placeItemModel
 
     override fun bindViewHolder(adapter: FlexibleAdapter<out IFlexible<*>>?, holder: PlaceItemViewHolder?, position: Int, payloads: MutableList<Any?>?) {
-        holder?.icon?.loadImage(model.imageUrl)
+        if (model.photo != null) {
+            val apiKey = holder?.itemView?.context?.getString(R.string.places_api_key)
+            val imageUrl = "https://maps.googleapis.com/maps/api/place/photo?key=$apiKey&photoreference=${model.photo?.photoReference}&maxWidth=400"
+            holder?.icon?.loadImage(imageUrl, R.drawable.ic_insert_photo_black_33_24dp)
+        } else {
+            holder?.icon?.setImageDrawable(null)
+        }
         holder?.title?.text = model.title
         holder?.description?.text = model.description
+    }
+
+    override fun hashCode(): Int {
+        return placeItemModel.hashCode()
     }
 
     class PlaceItemViewHolder(view: View, adapter: FlexibleAdapter<*>) : FlexibleViewHolder(view, adapter) {

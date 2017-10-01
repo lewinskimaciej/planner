@@ -43,7 +43,7 @@ class MainPresenter @Inject constructor(private val stringProvider: StringProvid
                         .toObservable()
                         .map { it.results.orEmpty() }
                         .flatMapIterable { list -> list }
-                        .map { PlaceItemModel(it.placeId, it.name, it.vicinity, it.icon) }
+                        .map { PlaceItemModel(it.placeId, it.name, it.vicinity, it.photos?.get(0)) }
                         .map { PlaceItem(it) }
                         .toList()
                         .observeOn(AndroidSchedulers.mainThread())
