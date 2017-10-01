@@ -4,22 +4,15 @@ import android.Manifest
 import android.os.Bundle
 import com.atc.planner.R
 import com.atc.planner.presentation.base.BaseMvpActivity
+import com.atc.planner.presentation.map.MapFragment
 import com.github.jksiezni.permissive.Permissive
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
 import javax.inject.Inject
 
 
-class MainActivity : BaseMvpActivity<MainView, MainPresenter>(),
-        MainView, OnMapReadyCallback {
+class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), MainView {
 
     @Inject
     lateinit var mainPresenter: MainPresenter
-
-    var map: GoogleMap? = null
 
     override fun createPresenter(): MainPresenter = mainPresenter
 
@@ -27,7 +20,10 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(),
         get() = R.layout.activity_main
 
     override fun onViewCreated(savedInstanceState: Bundle?) {
-        showMap()
+        val mapFragment = MapFragment()
+        supportFragmentManager.beginTransaction()
+                .replace(R.id.main_fragment_container, mapFragment)
+                .commitAllowingStateLoss()
     }
 
     override fun askForLocationPermission() {
@@ -41,17 +37,4 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(),
                 .execute(this)
     }
 
-    private fun showMap() {
-        val supportMapFragment = supportFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
-        supportMapFragment?.getMapAsync(this)
-    }
-
-    override fun onMapReady(map: GoogleMap?) {
-        this.map = map
-        presenter?.onMapReady()
-    }
-
-    override fun showLocationOnMap(latLong: LatLng) {
-        map?.moveCamera(CameraUpdateFactory.newLatLngZoom(latLong, 17f))
-    }
 }

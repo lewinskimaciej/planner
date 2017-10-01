@@ -1,8 +1,9 @@
-package com.atc.planner.presentation.main
+package com.atc.planner.presentation.map
 
 import com.atc.planner.presentation.base.BaseView
 import com.google.android.gms.maps.model.LatLng
 
-interface MainView : BaseView {
+interface MapView: BaseView {
     fun askForLocationPermission()
+    fun showLocationOnMap(latLong: LatLng)
 }
