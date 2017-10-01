@@ -5,6 +5,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.LinearSnapHelper
 import com.atc.planner.R
 import com.atc.planner.extensions.orZero
+import com.atc.planner.extensions.visible
 import com.atc.planner.presentation.base.BaseMvpActivity
 import com.atc.planner.presentation.main.adapter.PlaceItem
 import com.github.ajalt.timberkt.e
@@ -30,7 +31,7 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), MainView {
     private lateinit var rxPermissions: RxPermissions
 
     private var adapter: FlexibleAdapter<IFlexible<*>>? = null
-    private var linearLayoutManager : LinearLayoutManager? = null
+    private var linearLayoutManager: LinearLayoutManager? = null
 
     override fun onViewCreated(savedInstanceState: Bundle?) {
         setSupportActionBar(toolbar)
@@ -79,5 +80,6 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), MainView {
 
     override fun setItems(items: List<PlaceItem>) {
         adapter?.updateDataSet(items)
+        main_first_row_container.visible()
     }
 }
