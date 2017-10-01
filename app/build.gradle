@@ -50,6 +50,8 @@ dependencies {
 
     implementation 'com.hannesdorfmann.mosby3:mvp:3.0.4'
 
+    implementation 'eu.davidea:flexible-adapter:5.0.0-rc2'
+
     implementation 'com.google.dagger:dagger:2.11'
     kapt 'com.google.dagger:dagger-compiler:2.11'
     implementation 'com.google.dagger:dagger-android:2.11'

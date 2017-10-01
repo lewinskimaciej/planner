@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingEnd="55dp"
+    android:paddingStart="55dp">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:padding="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:background="#ccfaff">
+
+        <ImageView
+            android:id="@+id/item_icon"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:contentDescription="@null"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@mipmap/ic_launcher" />
+
+        <TextView
+            android:id="@+id/item_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="2"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/item_icon"
+            tools:text="Title" />
+
+        <TextView
+            android:id="@+id/item_description"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="2"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/item_title"
+            tools:text="description" />
+    </android.support.constraint.ConstraintLayout>
+</android.support.constraint.ConstraintLayout>
