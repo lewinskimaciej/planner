@@ -31,6 +31,11 @@ android {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        debug {
+            debuggable true
+            minifyEnabled false
+            multiDexEnabled = true
+        }
     }
 }
 
@@ -85,6 +90,10 @@ dependencies {
     implementation 'com.jakewharton.rxbinding2:rxbinding-design-kotlin:2.0.0'
     implementation "com.jakewharton.rxbinding2:rxbinding-appcompat-v7-kotlin:2.0.0"
     implementation 'com.jakewharton.rxbinding2:rxbinding-recyclerview-v7-kotlin:2.0.0'
+
+    implementation "io.objectbox:objectbox-android:$objectboxVersion"
+    implementation "io.objectbox:objectbox-kotlin:$objectboxVersion"
+    kapt "io.objectbox:objectbox-processor:$objectboxVersion"
 
     configurations.all {
         resolutionStrategy {
