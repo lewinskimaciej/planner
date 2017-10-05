@@ -10,6 +10,7 @@ import com.atc.planner.commons.CustomInterceptor
 import com.atc.planner.di.qualifiers.NullOnEmptyConverterFactory
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.sygic.travel.sdk.StSDK
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
@@ -98,4 +99,11 @@ class CommonModule {
     @Provides
     @Singleton
     fun locationProvider(app: App): LocationProvider = LocationProviderImpl(app)
+
+    @Provides
+    @Singleton
+    fun sygicSdk(app: App) : StSDK {
+        StSDK.initialize(app.getString(R.string.sygic_api_key), app)
+        return StSDK.getInstance()
+    }
 }

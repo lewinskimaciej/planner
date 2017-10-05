@@ -1,4 +1,4 @@
-package com.atc.planner.data.models.remote.nearby_places
+package com.atc.planner.data.models.remote.places_api
 
 enum class Type(val value: String) {
     ACCOUNTING("accounting"),

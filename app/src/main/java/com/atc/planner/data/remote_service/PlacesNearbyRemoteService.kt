@@ -1,7 +1,7 @@
 package com.atc.planner.data.remote_service
 
-import com.atc.planner.data.models.remote.nearby_places.NearbyPlacesEnvelope
-import com.atc.planner.data.models.remote.nearby_places.PlaceDetails
+import com.atc.planner.data.models.remote.places_api.NearbyPlacesEnvelope
+import com.atc.planner.data.models.remote.places_api.PlaceDetails
 import io.reactivex.Single
 import retrofit2.http.GET
 import retrofit2.http.Query

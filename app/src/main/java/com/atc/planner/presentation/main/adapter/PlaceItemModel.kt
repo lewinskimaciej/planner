@@ -1,6 +1,6 @@
 package com.atc.planner.presentation.main.adapter
 
-import com.atc.planner.data.models.remote.nearby_places.PhotoReferenceDetails
+import com.atc.planner.data.models.remote.places_api.PhotoReferenceDetails
 
 data class PlaceItemModel(var id: String?,
                           var title: String?,

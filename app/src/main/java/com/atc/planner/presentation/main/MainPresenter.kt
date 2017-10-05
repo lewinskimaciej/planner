@@ -3,8 +3,6 @@ package com.atc.planner.presentation.main
 import com.atc.planner.R
 import com.atc.planner.commons.LocationProvider
 import com.atc.planner.commons.StringProvider
-import com.atc.planner.data.models.remote.nearby_places.RankBy
-import com.atc.planner.data.models.remote.nearby_places.Type
 import com.atc.planner.data.repository.places_nearby_repository.PlacesNearbyRepository
 import com.atc.planner.di.scopes.ActivityScope
 import com.atc.planner.extensions.asLatLng
@@ -14,7 +12,6 @@ import com.atc.planner.presentation.main.adapter.PlaceItemModel
 import com.github.ajalt.timberkt.d
 import com.github.ajalt.timberkt.e
 import com.google.android.gms.maps.model.LatLng
-import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import java.io.Serializable
@@ -39,7 +36,7 @@ class MainPresenter @Inject constructor(private val stringProvider: StringProvid
             currentLocation = it?.asLatLng()
 
             currentLocation?.let {
-                placesNearbyRepository.getNearbyPlaces(it, 10000, RankBy.PROMINENCE, Type.RESTAURANT)
+                placesNearbyRepository.getRestaurantsNearby(it, 10000)
                         .subscribeOn(Schedulers.io())
                         .observeOn(Schedulers.computation())
                         .toObservable()
@@ -68,7 +65,7 @@ class MainPresenter @Inject constructor(private val stringProvider: StringProvid
 
     fun onLoadMore() {
         if (nextPage != null) {
-            placesNearbyRepository.getNextPageOfNearbyPlaces(nextPage)
+            placesNearbyRepository.getRestaurantsNearby(nextPage)
                     .subscribeOn(Schedulers.io())
                     .observeOn(Schedulers.computation())
                     .toObservable()

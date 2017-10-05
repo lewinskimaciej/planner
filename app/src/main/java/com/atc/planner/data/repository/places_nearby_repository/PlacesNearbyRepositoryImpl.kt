@@ -1,30 +1,33 @@
 package com.atc.planner.data.repository.places_nearby_repository
 
-import com.atc.planner.R
-import com.atc.planner.commons.StringProvider
-import com.atc.planner.data.models.remote.nearby_places.NearbyPlacesEnvelope
-import com.atc.planner.data.models.remote.nearby_places.PlaceDetails
-import com.atc.planner.data.models.remote.nearby_places.RankBy
-import com.atc.planner.data.models.remote.nearby_places.Type
-import com.atc.planner.data.remote_service.PlacesNearbyRemoteService
+import com.atc.planner.data.models.remote.places_api.NearbyPlacesEnvelope
+import com.atc.planner.data.models.remote.places_api.PlaceDetails
+import com.atc.planner.data.models.remote.places_api.RankBy
+import com.atc.planner.data.models.remote.places_api.Type
+import com.atc.planner.data.models.remote.sygic_api.Category
+import com.atc.planner.data.repository.places_nearby_repository.data_source.places_api.PlacesApiDataSource
+import com.atc.planner.data.repository.places_nearby_repository.data_source.sygic_api.SygicApiDataSource
 import com.google.android.gms.maps.model.LatLng
+import com.sygic.travel.sdk.StSDK
+import com.sygic.travel.sdk.api.Callback
+import com.sygic.travel.sdk.model.place.Place
+import com.sygic.travel.sdk.model.query.PlacesQuery
 import io.reactivex.Single
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class PlacesNearbyRepositoryImpl @Inject constructor(private val placesNearbyRemoteService: PlacesNearbyRemoteService,
-                                                     private val stringProvider: StringProvider): PlacesNearbyRepository {
-    override fun getNearbyPlaces(latLng: LatLng, radius: Int, rankBy: RankBy?, type: Type?): Single<NearbyPlacesEnvelope<PlaceDetails>> {
-        val key = stringProvider.getString(R.string.places_api_key)
-        val formattedLocation = "${latLng.latitude},${latLng.longitude}"
+class PlacesNearbyRepositoryImpl @Inject constructor(private val placesApiDataSource: PlacesApiDataSource,
+                                                     private val sygicApiDataSource: SygicApiDataSource)
+    : PlacesNearbyRepository {
 
-        return placesNearbyRemoteService.getNearbyPlaces(key, formattedLocation, radius, rankBy?.value, type?.value)
-    }
+    override fun getRestaurantsNearby(latLng: LatLng, radius: Int): Single<NearbyPlacesEnvelope<PlaceDetails>>
+            = placesApiDataSource.getPlaces(latLng, radius, RankBy.PROMINENCE, Type.RESTAURANT)
 
-    override fun getNextPageOfNearbyPlaces(nextPageToken: String?): Single<NearbyPlacesEnvelope<PlaceDetails>> {
-        val key = stringProvider.getString(R.string.places_api_key)
+    override fun getRestaurantsNearby(nextPageToken: String?): Single<NearbyPlacesEnvelope<PlaceDetails>>
+            = placesApiDataSource.getPlacesByToken(nextPageToken)
 
-        return placesNearbyRemoteService.getNextPageOfNearbyPlaces(key, nextPageToken)
+    override fun getSightsNearby(latLng: LatLng, radius: Int) {
+        sygicApiDataSource.getPlaces(latLng, radius, listOf(Category.SIGHTSEEING))
     }
 }
