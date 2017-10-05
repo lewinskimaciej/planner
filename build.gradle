@@ -6,7 +6,6 @@ buildscript {
     repositories {
         google()
         jcenter()
-        mavenCentral()
         maven { url "http://objectbox.net/beta-repo/" }
     }
     dependencies {
@@ -14,8 +13,6 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.google.gms:google-services:3.1.0'
         classpath "io.objectbox:objectbox-gradle-plugin:$objectboxVersion"
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
     }
 }
 
@@ -27,6 +24,7 @@ allprojects {
         maven { url 'http://repo1.maven.org/maven2' }
         maven { url "http://objectbox.net/beta-repo/" }
         maven { url "https://s3.amazonaws.com/repo.commonsware.com" }
+        maven { url  "http://dl.bintray.com/sygic-travel/maven" }
     }
 }
 

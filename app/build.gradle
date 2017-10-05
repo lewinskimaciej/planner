@@ -23,6 +23,7 @@ android {
         vectorDrawables.useSupportLibrary = true
 
         resValue "string", "places_api_key", System.getenv("PLACES_API_KEY") ?: localProperties.getProperty("PLACES_API_KEY") ?: ""
+        resValue "string", "sygic_api_key", System.getenv("SYGIC_API_KEY") ?: localProperties.getProperty("SYGIC_API_KEY") ?: ""
 
     }
 
@@ -94,6 +95,10 @@ dependencies {
     implementation "io.objectbox:objectbox-android:$objectboxVersion"
     implementation "io.objectbox:objectbox-kotlin:$objectboxVersion"
     kapt "io.objectbox:objectbox-processor:$objectboxVersion"
+
+    implementation ('com.sygic.travel:sdk:1.0.1@aar'){
+        transitive=true
+    }
 
     configurations.all {
         resolutionStrategy {
