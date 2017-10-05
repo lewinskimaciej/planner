@@ -14,4 +14,7 @@ interface PlacesNearbyRemoteService {
                         @Query("rankby") rankBy: String?,
                         @Query("type") type: String?): Single<NearbyPlacesEnvelope<PlaceDetails>>
 
+    @GET("https://maps.googleapis.com/maps/api/place/nearbysearch/json")
+    fun getNextPageOfNearbyPlaces(@Query("key") apiKey: String,
+                                  @Query("pagetoken") nextPageToken: String?): Single<NearbyPlacesEnvelope<PlaceDetails>>
 }

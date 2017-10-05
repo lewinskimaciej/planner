@@ -8,6 +8,7 @@ import com.atc.planner.extensions.orZero
 import com.atc.planner.extensions.visible
 import com.atc.planner.presentation.base.BaseMvpActivity
 import com.atc.planner.presentation.main.adapter.PlaceItem
+import com.atc.planner.presentation.main.adapter.ProgressItem
 import com.github.ajalt.timberkt.e
 import com.jakewharton.rxbinding2.view.clicks
 import com.tbruyelle.rxpermissions2.RxPermissions
@@ -18,7 +19,7 @@ import kotlinx.android.synthetic.main.content_main.*
 import javax.inject.Inject
 
 
-class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), MainView {
+class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), MainView, FlexibleAdapter.EndlessScrollListener<IFlexible<*>> {
 
     @Inject
     lateinit var mainPresenter: MainPresenter
@@ -40,13 +41,16 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), MainView {
         linearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
         adapter = FlexibleAdapter(null)
+        adapter?.setEndlessScrollListener(this, ProgressItem())
+        adapter?.endlessTargetCount = 3
+
         main_recycler_view.layoutManager = linearLayoutManager
         main_recycler_view.adapter = adapter
+
         val linearSnapHelper = LinearSnapHelper()
         linearSnapHelper.attachToRecyclerView(main_recycler_view)
+
         bindViews()
-
-
     }
 
     private fun bindViews() {
@@ -81,5 +85,17 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), MainView {
     override fun setItems(items: List<PlaceItem>) {
         adapter?.updateDataSet(items)
         main_first_row_container.visible()
+    }
+
+    override fun addItems(items: List<PlaceItem>) {
+        adapter?.onLoadMoreComplete(items)
+    }
+
+    override fun noMoreLoad(newItemsSize: Int) {
+        presenter?.noMoreLoad()
+    }
+
+    override fun onLoadMore(lastPosition: Int, currentPage: Int) {
+        presenter?.onLoadMore()
     }
 }

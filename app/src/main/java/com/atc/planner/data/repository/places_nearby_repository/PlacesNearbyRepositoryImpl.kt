@@ -21,4 +21,10 @@ class PlacesNearbyRepositoryImpl @Inject constructor(private val placesNearbyRem
 
         return placesNearbyRemoteService.getNearbyPlaces(key, formattedLocation, radius, rankBy?.value, type?.value)
     }
+
+    override fun getNextPageOfNearbyPlaces(nextPageToken: String?): Single<NearbyPlacesEnvelope<PlaceDetails>> {
+        val key = stringProvider.getString(R.string.places_api_key)
+
+        return placesNearbyRemoteService.getNextPageOfNearbyPlaces(key, nextPageToken)
+    }
 }

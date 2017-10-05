@@ -9,4 +9,5 @@ import io.reactivex.Single
 
 interface PlacesNearbyRepository {
     fun getNearbyPlaces(latLng: LatLng, radius: Int, rankBy: RankBy?, type: Type?): Single<NearbyPlacesEnvelope<PlaceDetails>>
+    fun getNextPageOfNearbyPlaces(nextPageToken: String?): Single<NearbyPlacesEnvelope<PlaceDetails>>
 }
