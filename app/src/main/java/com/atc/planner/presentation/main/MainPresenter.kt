@@ -7,8 +7,6 @@ import com.atc.planner.data.repository.places_nearby_repository.PlacesNearbyRepo
 import com.atc.planner.di.scopes.ActivityScope
 import com.atc.planner.extensions.asLatLng
 import com.atc.planner.presentation.base.BasePresenter
-import com.atc.planner.presentation.main.adapter.PlaceItem
-import com.atc.planner.presentation.main.adapter.PlaceItemModel
 import com.github.ajalt.timberkt.d
 import com.github.ajalt.timberkt.e
 import com.google.android.gms.maps.model.LatLng
@@ -38,11 +36,6 @@ class MainPresenter @Inject constructor(private val stringProvider: StringProvid
                 placesNearbyRepository.getSightsNearby(it, 10000)
                         .subscribeOn(Schedulers.io())
                         .observeOn(Schedulers.computation())
-                        .toObservable()
-                        .flatMapIterable { it }
-                        .map { PlaceItemModel(it.id, it.name, it.description, it.thumbnailUrl) }
-                        .map { PlaceItem(it) }
-                        .toList()
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe({
                             view?.setItems(it)

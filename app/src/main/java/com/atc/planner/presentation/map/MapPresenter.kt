@@ -3,6 +3,7 @@ package com.atc.planner.presentation.map
 import com.atc.planner.R
 import com.atc.planner.commons.LocationProvider
 import com.atc.planner.commons.StringProvider
+import com.atc.planner.data.models.local.LocalPlace
 import com.atc.planner.di.scopes.FragmentScope
 import com.atc.planner.extensions.asLatLng
 import com.atc.planner.presentation.base.BasePresenter
@@ -40,16 +41,16 @@ class MapPresenter @Inject constructor(private val stringProvider: StringProvide
     fun onMapReady() {
         isMapReady = true
 
-//        locationProvider.getLastLocation({
-//            currentLocation = it?.asLatLng()
-//            showCurrentLocation()
-//        }, {
-//            it.let {
-//                e(it)
-//                view?.showErrorToast()
-//                showDefaultLocation()
-//            }
-//        })
+        locationProvider.getLastLocation({
+            currentLocation = it?.asLatLng()
+            showCurrentLocation()
+        }, {
+            it.let {
+                e(it)
+                view?.showErrorToast()
+                showDefaultLocation()
+            }
+        })
     }
 
     private fun showCurrentLocation() {
@@ -64,5 +65,15 @@ class MapPresenter @Inject constructor(private val stringProvider: StringProvide
 
     private fun showDefaultLocation() {
         view?.showLocationOnMap(defaultLocation)
+    }
+
+    fun onSetData(items: List<LocalPlace>) {
+        if (isMapReady) {
+            items.forEach { view?.addMarker(it) }
+        }
+    }
+
+    fun onAddData(items: List<LocalPlace>) {
+
     }
 }

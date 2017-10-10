@@ -2,6 +2,7 @@ package com.atc.planner.presentation.map
 
 import android.os.Bundle
 import com.atc.planner.R
+import com.atc.planner.data.models.local.LocalPlace
 import com.atc.planner.presentation.base.BaseMvpFragment
 import com.github.ajalt.timberkt.e
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -9,6 +10,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import com.tbruyelle.rxpermissions2.RxPermissions
 import javax.inject.Inject
 
@@ -56,4 +58,19 @@ class MapFragment : BaseMvpFragment<MapView, MapPresenter>(), MapView, OnMapRead
         map?.moveCamera(CameraUpdateFactory.newLatLngZoom(latLong, 17f))
     }
 
+    override fun setData(items: List<LocalPlace>) {
+        presenter?.onSetData(items)
+    }
+
+    override fun addData(items: List<LocalPlace>) {
+        presenter?.onAddData(items)
+    }
+
+    override fun addMarker(item: LocalPlace) {
+        item.location?.let {
+            val markerOptions = MarkerOptions()
+            markerOptions.position(it)
+            map?.addMarker(markerOptions)
+        }
+    }
 }
