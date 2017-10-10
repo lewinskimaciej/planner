@@ -11,5 +11,22 @@ enum class Category(val value: String) {
     SIGHTSEEING("sightseeing"),
     SLEEPING("sleeping"),
     DOING_SPORTS("doing_sports"),
-    TRAVELING("traveling")
+    TRAVELING("traveling"),
+    OTHER("other")
 }
+
+fun String?.asCategory(): Category = when (this) {
+    Category.DISCOVERING.value -> Category.DISCOVERING
+    Category.EATING.value -> Category.EATING
+    Category.GOING_OUT.value -> Category.GOING_OUT
+    Category.HIKING.value -> Category.HIKING
+    Category.PLAYING.value -> Category.PLAYING
+    Category.RELAXING.value -> Category.RELAXING
+    Category.SHOPPING.value -> Category.SHOPPING
+    Category.SIGHTSEEING.value -> Category.SIGHTSEEING
+    Category.SLEEPING.value -> Category.SLEEPING
+    Category.DOING_SPORTS.value -> Category.DOING_SPORTS
+    Category.TRAVELING.value -> Category.TRAVELING
+    else -> Category.OTHER
+}
+

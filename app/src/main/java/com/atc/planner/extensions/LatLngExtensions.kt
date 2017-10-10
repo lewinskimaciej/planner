@@ -2,6 +2,7 @@ package com.atc.planner.extensions
 
 import com.google.android.gms.maps.model.LatLng
 import com.sygic.travel.sdk.model.geo.Bounds
+import com.sygic.travel.sdk.model.geo.Location
 
 fun LatLng.boundingBox(radius: Int): Bounds? {
     val earthRadius = 6371.toDouble()
@@ -20,3 +21,5 @@ fun LatLng.boundingBox(radius: Int): Bounds? {
 
     return bounds
 }
+
+fun Location?.asLatLng(): LatLng = LatLng(this?.lat.orZero().toDouble(), this?.lng.orZero().toDouble())

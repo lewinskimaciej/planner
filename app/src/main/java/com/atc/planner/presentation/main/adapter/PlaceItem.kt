@@ -25,10 +25,8 @@ class PlaceItem(private var placeItemModel: PlaceItemModel)
     override fun getModel(): PlaceItemModel = placeItemModel
 
     override fun bindViewHolder(adapter: FlexibleAdapter<out IFlexible<*>>?, holder: PlaceItemViewHolder?, position: Int, payloads: MutableList<Any?>?) {
-        if (model.photo != null) {
-            val apiKey = holder?.itemView?.context?.getString(R.string.places_api_key)
-            val imageUrl = "https://maps.googleapis.com/maps/api/place/photo?key=$apiKey&photoreference=${model.photo?.photoReference}&maxWidth=400"
-            holder?.icon?.loadImage(imageUrl, R.drawable.ic_insert_photo_black_33_24dp)
+        if (model.photoUrl != null) {
+            holder?.icon?.loadImage(model.photoUrl, R.drawable.ic_insert_photo_black_33_24dp)
         } else {
             holder?.icon?.setImageDrawable(null)
         }

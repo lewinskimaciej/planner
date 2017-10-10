@@ -24,7 +24,6 @@ class MainPresenter @Inject constructor(private val stringProvider: StringProvid
     : BasePresenter<MainView>() {
 
     private var currentLocation: LatLng? = null
-    private var nextPage: String? = null
 
     override fun onViewCreated(data: Serializable?) {
         view?.askForLocationPermission()
@@ -36,14 +35,12 @@ class MainPresenter @Inject constructor(private val stringProvider: StringProvid
             currentLocation = it?.asLatLng()
 
             currentLocation?.let {
-                placesNearbyRepository.getRestaurantsNearby(it, 10000)
+                placesNearbyRepository.getSightsNearby(it, 10000)
                         .subscribeOn(Schedulers.io())
                         .observeOn(Schedulers.computation())
                         .toObservable()
-                        .doOnNext { nextPage = it.nextPageToken }
-                        .map { it.results.orEmpty() }
-                        .flatMapIterable { list -> list }
-                        .map { PlaceItemModel(it.placeId, it.name, it.vicinity, it.photos?.get(0)) }
+                        .flatMapIterable { it }
+                        .map { PlaceItemModel(it.id, it.name, it.description, it.thumbnailUrl) }
                         .map { PlaceItem(it) }
                         .toList()
                         .observeOn(AndroidSchedulers.mainThread())
@@ -61,28 +58,5 @@ class MainPresenter @Inject constructor(private val stringProvider: StringProvid
         view?.showAlertDialog(stringProvider.getString(R.string.location_permission_refused_dialog_title),
                 stringProvider.getString(R.string.location_permission_refused_dialog_content))
         view?.askForLocationPermission()
-    }
-
-    fun onLoadMore() {
-        if (nextPage != null) {
-            placesNearbyRepository.getRestaurantsNearby(nextPage)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(Schedulers.computation())
-                    .toObservable()
-                    .doOnNext { nextPage = it.nextPageToken }
-                    .map { it.results.orEmpty() }
-                    .flatMapIterable { list -> list }
-                    .map { PlaceItemModel(it.placeId, it.name, it.vicinity, it.photos?.get(0)) }
-                    .map { PlaceItem(it) }
-                    .toList()
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe({
-                        view?.addItems(it)
-                    }, ::e)
-        }
-    }
-
-    fun noMoreLoad() {
-        e { "noMoreLoad" }
     }
 }

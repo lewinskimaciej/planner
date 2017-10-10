@@ -1,4 +1,4 @@
-package com.atc.planner.data.models.remote.common
+package com.atc.planner.data.models.remote.places_api
 
 import com.google.gson.annotations.SerializedName
 
