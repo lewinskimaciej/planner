@@ -13,8 +13,8 @@ fun LatLng.boundingBox(radius: Int): Bounds? {
     val y2 = this.latitude - Math.toDegrees(radiusInKm / earthRadius)
 
     val bounds = Bounds()
-    bounds.east = x1.toFloat()
-    bounds.west = x2.toFloat()
+    bounds.east = x2.toFloat()
+    bounds.west = x1.toFloat()
     bounds.north = y1.toFloat()
     bounds.south = y2.toFloat()
 
