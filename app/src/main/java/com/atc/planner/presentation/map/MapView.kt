@@ -10,4 +10,5 @@ interface MapView: BaseView {
     fun setData(items: List<LocalPlace>)
     fun addData(items: List<LocalPlace>)
     fun addMarker(item: LocalPlace)
+    fun clearMarkers()
 }

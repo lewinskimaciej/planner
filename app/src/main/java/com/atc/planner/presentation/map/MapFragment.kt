@@ -66,6 +66,10 @@ class MapFragment : BaseMvpFragment<MapView, MapPresenter>(), MapView, OnMapRead
         presenter?.onAddData(items)
     }
 
+    override fun clearMarkers() {
+        map?.clear()
+    }
+
     override fun addMarker(item: LocalPlace) {
         item.location?.let {
             val markerOptions = MarkerOptions()

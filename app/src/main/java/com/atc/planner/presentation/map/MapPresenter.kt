@@ -69,11 +69,14 @@ class MapPresenter @Inject constructor(private val stringProvider: StringProvide
 
     fun onSetData(items: List<LocalPlace>) {
         if (isMapReady) {
+            view?.clearMarkers()
             items.forEach { view?.addMarker(it) }
         }
     }
 
     fun onAddData(items: List<LocalPlace>) {
-
+        if (isMapReady) {
+            items.forEach { view?.addMarker(it) }
+        }
     }
 }
