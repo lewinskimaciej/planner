@@ -11,6 +11,9 @@ import com.github.ajalt.timberkt.e
 import com.google.android.gms.maps.model.LatLng
 import java.io.Serializable
 import javax.inject.Inject
+import com.google.android.gms.maps.model.LatLngBounds
+
+
 
 @FragmentScope
 class MapPresenter @Inject constructor(private val stringProvider: StringProvider,
@@ -56,7 +59,7 @@ class MapPresenter @Inject constructor(private val stringProvider: StringProvide
     private fun showCurrentLocation() {
         if (currentLocation != null) {
             currentLocation?.let {
-                view?.showLocationOnMap(it)
+                view?.showCurrentLocation(it)
             }
         } else {
             showDefaultLocation()
@@ -64,13 +67,13 @@ class MapPresenter @Inject constructor(private val stringProvider: StringProvide
     }
 
     private fun showDefaultLocation() {
-        view?.showLocationOnMap(defaultLocation)
+        view?.showCurrentLocation(defaultLocation)
     }
 
     fun onSetData(items: List<LocalPlace>) {
         if (isMapReady) {
-            view?.clearMarkers()
             items.forEach { view?.addMarker(it) }
+            view?.zoomToFitAllMarkers()
         }
     }
 
@@ -78,5 +81,9 @@ class MapPresenter @Inject constructor(private val stringProvider: StringProvide
         if (isMapReady) {
             items.forEach { view?.addMarker(it) }
         }
+    }
+
+    fun onItemClick(localPlace: LocalPlace?){
+
     }
 }

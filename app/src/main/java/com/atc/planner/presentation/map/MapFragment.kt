@@ -13,9 +13,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 import com.tbruyelle.rxpermissions2.RxPermissions
 import javax.inject.Inject
 
@@ -30,9 +28,11 @@ class MapFragment : BaseMvpFragment<MapView, MapPresenter>(), MapView, OnMapRead
     @Inject
     lateinit var bitmapProvider: BitmapProvider
 
-    var map: GoogleMap? = null
-
     lateinit var rxPermissions: RxPermissions
+
+    private var map: GoogleMap? = null
+    private var usersLocationMarker: Marker? = null
+    private var currentItems: HashMap<Marker?, LocalPlace> = hashMapOf()
 
     override fun createPresenter(): MapPresenter = mapPresenter
 
@@ -60,10 +60,20 @@ class MapFragment : BaseMvpFragment<MapView, MapPresenter>(), MapView, OnMapRead
     override fun onMapReady(map: GoogleMap?) {
         this.map = map
         presenter?.onMapReady()
+        map?.setOnMarkerClickListener {
+            presenter?.onItemClick(currentItems[it])
+            false
+        }
     }
 
-    override fun showLocationOnMap(latLong: LatLng) {
-        map?.moveCamera(CameraUpdateFactory.newLatLngZoom(latLong, 17f))
+    override fun showCurrentLocation(latLong: LatLng) {
+        if (usersLocationMarker == null) {
+            val markerOptions = MarkerOptions()
+            markerOptions.position(latLong)
+            usersLocationMarker = map?.addMarker(markerOptions)
+        } else {
+            usersLocationMarker?.position = latLong
+        }
     }
 
     override fun setData(items: List<LocalPlace>) {
@@ -85,16 +95,24 @@ class MapFragment : BaseMvpFragment<MapView, MapPresenter>(), MapView, OnMapRead
             bitmapProvider.getRoundedBitmap(item.thumbnailUrl,
                     {
                         markerOptions.icon(BitmapDescriptorFactory.fromBitmap(it?.resize(32.dpToPx().toInt(), 32.dpToPx().toInt())))
-                        map?.addMarker(markerOptions)
+                        val marker = map?.addMarker(markerOptions)
+                        currentItems.put(marker, item)
                     },
                     {
                         val bitmap = BitmapFactory.decodeResource(resources, R.drawable.error_marker)
 
                         markerOptions.icon(BitmapDescriptorFactory.fromBitmap(bitmap.resize(32.dpToPx().toInt(), 32.dpToPx().toInt())))
-                        map?.addMarker(markerOptions)
+                        val marker = map?.addMarker(markerOptions)
+                        currentItems.put(marker, item)
                     })
 
         }
     }
 
+    override fun zoomToFitAllMarkers() {
+        val builder = LatLngBounds.Builder()
+        currentItems.forEach { builder.include(it.value.location) }
+        val bounds = builder.build()
+        map?.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 20))
+    }
 }
