@@ -78,7 +78,9 @@ dependencies {
 
     implementation 'com.google.code.gson:gson:2.8.0'
 
-    implementation 'com.github.bumptech.glide:glide:3.7.0'
+    implementation 'com.github.bumptech.glide:glide:4.0.0'
+    kapt 'com.github.bumptech.glide:compiler:4.0.0'
+    implementation 'jp.wasabeef:glide-transformations:3.0.1'
 
     implementation 'com.tbruyelle.rxpermissions2:rxpermissions:0.9.4@aar'
 

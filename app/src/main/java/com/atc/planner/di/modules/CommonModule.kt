@@ -106,4 +106,7 @@ class CommonModule {
         StSDK.initialize(app.getString(R.string.sygic_api_key), app)
         return StSDK.getInstance()
     }
+
+    @Provides
+    fun bitmapProvider(app: App) : BitmapProvider = BitmapProviderImpl(app)
 }

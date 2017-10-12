@@ -1,14 +1,19 @@
 package com.atc.planner.presentation.map
 
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import com.atc.planner.R
+import com.atc.planner.commons.BitmapProvider
 import com.atc.planner.data.models.local.LocalPlace
+import com.atc.planner.extensions.dpToPx
+import com.atc.planner.extensions.resize
 import com.atc.planner.presentation.base.BaseMvpFragment
 import com.github.ajalt.timberkt.e
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.tbruyelle.rxpermissions2.RxPermissions
@@ -21,6 +26,9 @@ class MapFragment : BaseMvpFragment<MapView, MapPresenter>(), MapView, OnMapRead
 
     @Inject
     lateinit var mapPresenter: MapPresenter
+
+    @Inject
+    lateinit var bitmapProvider: BitmapProvider
 
     var map: GoogleMap? = null
 
@@ -74,7 +82,19 @@ class MapFragment : BaseMvpFragment<MapView, MapPresenter>(), MapView, OnMapRead
         item.location?.let {
             val markerOptions = MarkerOptions()
             markerOptions.position(it)
-            map?.addMarker(markerOptions)
+            bitmapProvider.getRoundedBitmap(item.thumbnailUrl,
+                    {
+                        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(it?.resize(32.dpToPx().toInt(), 32.dpToPx().toInt())))
+                        map?.addMarker(markerOptions)
+                    },
+                    {
+                        val bitmap = BitmapFactory.decodeResource(resources, R.drawable.error_marker)
+
+                        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(bitmap.resize(32.dpToPx().toInt(), 32.dpToPx().toInt())))
+                        map?.addMarker(markerOptions)
+                    })
+
         }
     }
+
 }
