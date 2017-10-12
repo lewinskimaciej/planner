@@ -7,4 +7,5 @@ import io.reactivex.Single
 
 interface SygicApiDataSource {
     fun getPlaces(latLng: LatLng, radius: Int, categories: List<Category>): Single<List<Place>>
+    fun getPlaceDetailed(id: String?) : Single<Place>
 }

@@ -84,6 +84,6 @@ class MapPresenter @Inject constructor(private val stringProvider: StringProvide
     }
 
     fun onItemClick(localPlace: LocalPlace?){
-
+        // todo
     }
 }

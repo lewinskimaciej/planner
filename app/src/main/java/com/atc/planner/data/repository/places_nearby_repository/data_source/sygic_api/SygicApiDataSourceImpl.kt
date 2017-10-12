@@ -39,4 +39,26 @@ class SygicApiDataSourceImpl @Inject constructor(private val stSDK: StSDK)
             }
         })
     }
+
+    override fun getPlaceDetailed(id: String?) : Single<Place> = Single.create<Place> {
+
+        if (id != null) {
+            stSDK.getPlaceDetailed(id, object : Callback<Place?>() {
+                override fun onSuccess(data: Place?) {
+                    d { "getPlaceDetailed: onSuccess" }
+                    if(data != null) {
+                        it.onSuccess(data)
+                    } else {
+                        it.onError(NullPointerException("Place was equal to null"))
+                    }
+                }
+
+                override fun onFailure(t: Throwable) {
+                    d { "getPlaceDetailed: onFailure" }
+                    it.onError(t)
+                }
+
+            })
+        }
+    }
 }
