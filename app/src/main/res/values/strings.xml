@@ -15,4 +15,5 @@
     <string name="no_internet_connection">No internet connection</string>
     <string name="location_permission_refused_dialog_title">Location permission is needed</string>
     <string name="location_permission_refused_dialog_content">In order to properly work and provide you with ideas, we need to know your location</string>
+    <string name="learn_more">Learn more</string>
 </resources>

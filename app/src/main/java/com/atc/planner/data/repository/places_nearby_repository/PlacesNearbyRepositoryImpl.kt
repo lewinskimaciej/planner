@@ -54,7 +54,7 @@ class PlacesNearbyRepositoryImpl @Inject constructor(private val placesApiDataSo
                         ?.media
                         .orEmpty()
                         .filter { "photo" == it.type }
-                        .map { it.type }
+                        .map { it.url }
 
                 LocalPlace(0,
                         it.id,
