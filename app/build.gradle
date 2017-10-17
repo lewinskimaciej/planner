@@ -98,8 +98,8 @@ dependencies {
     implementation "io.objectbox:objectbox-kotlin:$objectboxVersion"
     kapt "io.objectbox:objectbox-processor:$objectboxVersion"
 
-    implementation ('com.sygic.travel:sdk:1.0.1@aar'){
-        transitive=true
+    implementation('com.sygic.travel:sdk:1.0.1@aar') {
+        transitive = true
     }
 
     configurations.all {
