@@ -32,12 +32,30 @@ class PlacesNearbyRepositoryImpl @Inject constructor(private val placesApiDataSo
             = sygicApiDataSource.getPlaces(latLng, radius, listOf(Category.SIGHTSEEING))
             .toObservable()
             .flatMapIterable { it }
+            .filter { it.id != null }
+            .map { it.id as String }
+            .toList()
+            .flatMap { sygicApiDataSource.getPlacesDetailed(it) }
+            .toObservable()
+            .flatMapIterable { it }
             .map {
-                val description = if (!it.perex.isNullOrEmpty()) {
-                    it.perex
+                val description = if (it.detail != null) {
+                    it.detail?.description?.text
                 } else {
-                    it.nameSuffix
+                    if (!it.perex.isNullOrEmpty()) {
+                        it.perex
+                    } else {
+                        it.nameSuffix
+                    }
                 }
+
+                val photos = it.detail
+                        ?.mainMedia
+                        ?.media
+                        .orEmpty()
+                        .filter { "photo" == it.type }
+                        .map { it.type }
+
                 LocalPlace(0,
                         it.id,
                         it.level,
@@ -50,6 +68,7 @@ class PlacesNearbyRepositoryImpl @Inject constructor(private val placesApiDataSo
                         it.url,
                         it.thumbnailUrl,
                         it.detail?.openingHours,
+                        photos,
                         DataSource.SYGIC)
             }
             .toList()

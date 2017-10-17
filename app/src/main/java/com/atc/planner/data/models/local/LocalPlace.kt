@@ -15,5 +15,6 @@ data class LocalPlace(
         var url: String? = null,
         var thumbnailUrl: String? = null,
         var openingHours: String? = null,
+        var photos: List<String?>? = null,
         var source: DataSource? = null
 )
