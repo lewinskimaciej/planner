@@ -11,7 +11,7 @@ import com.atc.planner.data.models.remote.sygic_api.Category
 import com.atc.planner.data.models.remote.sygic_api.asCategory
 import com.atc.planner.data.repository.places_nearby_repository.data_source.places_api.PlacesApiDataSource
 import com.atc.planner.data.repository.places_nearby_repository.data_source.sygic_api.SygicApiDataSource
-import com.atc.planner.extensions.asLatLng
+import com.atc.planner.extensions.asLatLong
 import com.google.android.gms.maps.model.LatLng
 import io.reactivex.Single
 import javax.inject.Inject
@@ -61,7 +61,7 @@ class PlacesNearbyRepositoryImpl @Inject constructor(private val placesApiDataSo
                         it.level,
                         it.categories?.map { it.asCategory().asPlaceType() },
                         it.rating,
-                        it.location.asLatLng(),
+                        it.location.asLatLong(),
                         it.name,
                         it.nameSuffix,
                         description,

@@ -1,6 +1,6 @@
 package com.atc.planner.data.models.local
 
-import com.google.android.gms.maps.model.LatLng
+import com.atc.planner.data.models.BaseModel
 
 data class LocalPlace(
         var id: Long = 0,
@@ -8,7 +8,7 @@ data class LocalPlace(
         var level: String? = null,
         var categories: List<PlaceType>? = null,
         var rating: Float = 0.toFloat(),
-        var location: LatLng? = null,
+        var location: LatLong? = null,
         var name: String? = null,
         var address: String? = null,
         var description: String? = null,
@@ -17,4 +17,4 @@ data class LocalPlace(
         var openingHours: String? = null,
         var photos: List<String?>? = null,
         var source: DataSource? = null
-)
+) : BaseModel()

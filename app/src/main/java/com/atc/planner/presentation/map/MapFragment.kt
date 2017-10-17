@@ -5,9 +5,12 @@ import android.os.Bundle
 import com.atc.planner.R
 import com.atc.planner.commons.BitmapProvider
 import com.atc.planner.data.models.local.LocalPlace
+import com.atc.planner.extensions.asLatLng
 import com.atc.planner.extensions.dpToPx
 import com.atc.planner.extensions.resize
 import com.atc.planner.presentation.base.BaseMvpFragment
+import com.atc.planner.presentation.place_details.PlaceDetailsActivity
+import com.atc.planner.presentation.place_details.PlaceDetailsBundle
 import com.github.ajalt.timberkt.e
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -91,7 +94,7 @@ class MapFragment : BaseMvpFragment<MapView, MapPresenter>(), MapView, OnMapRead
     override fun addMarker(item: LocalPlace) {
         item.location?.let {
             val markerOptions = MarkerOptions()
-            markerOptions.position(it)
+            markerOptions.position(it.asLatLng())
             bitmapProvider.getRoundedBitmap(item.thumbnailUrl,
                     {
                         markerOptions.icon(BitmapDescriptorFactory.fromBitmap(it?.resize(32.dpToPx().toInt(), 32.dpToPx().toInt())))
@@ -111,8 +114,12 @@ class MapFragment : BaseMvpFragment<MapView, MapPresenter>(), MapView, OnMapRead
 
     override fun zoomToFitAllMarkers() {
         val builder = LatLngBounds.Builder()
-        currentItems.forEach { builder.include(it.value.location) }
+        currentItems.forEach { builder.include(it.value.location?.asLatLng()) }
         val bounds = builder.build()
         map?.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 20))
+    }
+
+    override fun goToPlaceDetails(placeDetailsBundle: PlaceDetailsBundle) {
+        PlaceDetailsActivity.start(context, placeDetailsBundle)
     }
 }

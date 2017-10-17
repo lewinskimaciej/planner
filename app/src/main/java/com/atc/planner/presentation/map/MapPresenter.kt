@@ -5,14 +5,13 @@ import com.atc.planner.commons.LocationProvider
 import com.atc.planner.commons.StringProvider
 import com.atc.planner.data.models.local.LocalPlace
 import com.atc.planner.di.scopes.FragmentScope
-import com.atc.planner.extensions.asLatLng
+import com.atc.planner.extensions.asLatLong
 import com.atc.planner.presentation.base.BasePresenter
+import com.atc.planner.presentation.place_details.PlaceDetailsBundle
 import com.github.ajalt.timberkt.e
 import com.google.android.gms.maps.model.LatLng
 import java.io.Serializable
 import javax.inject.Inject
-import com.google.android.gms.maps.model.LatLngBounds
-
 
 
 @FragmentScope
@@ -45,7 +44,7 @@ class MapPresenter @Inject constructor(private val stringProvider: StringProvide
         isMapReady = true
 
         locationProvider.getLastLocation({
-            currentLocation = it?.asLatLng()
+            currentLocation = it?.asLatLong()
             showCurrentLocation()
         }, {
             it.let {
@@ -84,6 +83,6 @@ class MapPresenter @Inject constructor(private val stringProvider: StringProvide
     }
 
     fun onItemClick(localPlace: LocalPlace?){
-        // todo
+        view?.goToPlaceDetails(PlaceDetailsBundle(localPlace))
     }
 }

@@ -1,5 +1,6 @@
 package com.atc.planner.extensions
 
+import com.atc.planner.data.models.local.LatLong
 import com.google.android.gms.maps.model.LatLng
 import com.sygic.travel.sdk.model.geo.Bounds
 import com.sygic.travel.sdk.model.geo.Location
@@ -22,4 +23,6 @@ fun LatLng.boundingBox(radius: Int): Bounds? {
     return bounds
 }
 
-fun Location?.asLatLng(): LatLng = LatLng(this?.lat.orZero().toDouble(), this?.lng.orZero().toDouble())
+fun Location?.asLatLong(): LatLong = LatLong(this?.lat.orZero().toDouble(), this?.lng.orZero().toDouble())
+
+fun LatLong?.asLatLng(): LatLng = LatLng(this?.lat.orZero(), this?.long.orZero())

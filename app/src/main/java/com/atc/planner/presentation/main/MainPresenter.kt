@@ -5,7 +5,7 @@ import com.atc.planner.commons.LocationProvider
 import com.atc.planner.commons.StringProvider
 import com.atc.planner.data.repository.places_nearby_repository.PlacesNearbyRepository
 import com.atc.planner.di.scopes.ActivityScope
-import com.atc.planner.extensions.asLatLng
+import com.atc.planner.extensions.asLatLong
 import com.atc.planner.presentation.base.BasePresenter
 import com.github.ajalt.timberkt.d
 import com.github.ajalt.timberkt.e
@@ -30,7 +30,7 @@ class MainPresenter @Inject constructor(private val stringProvider: StringProvid
     fun onPermissionsGranted() {
         d { "onPermissionsGranted" }
         locationProvider.getLastLocation({
-            currentLocation = it?.asLatLng()
+            currentLocation = it?.asLatLong()
 
             currentLocation?.let {
                 placesNearbyRepository.getSightsNearby(it, 10000)

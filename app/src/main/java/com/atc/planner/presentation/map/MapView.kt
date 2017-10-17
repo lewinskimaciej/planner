@@ -2,6 +2,7 @@ package com.atc.planner.presentation.map
 
 import com.atc.planner.data.models.local.LocalPlace
 import com.atc.planner.presentation.base.BaseView
+import com.atc.planner.presentation.place_details.PlaceDetailsBundle
 import com.google.android.gms.maps.model.LatLng
 
 interface MapView : BaseView {
@@ -12,4 +13,5 @@ interface MapView : BaseView {
     fun addMarker(item: LocalPlace)
     fun clearMarkers()
     fun zoomToFitAllMarkers()
+    fun goToPlaceDetails(placeDetailsBundle: PlaceDetailsBundle)
 }
