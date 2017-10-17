@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
+import android.view.MenuItem
 import com.atc.planner.R
 import com.atc.planner.data.models.local.LocalPlace
 import com.atc.planner.extensions.setupToolbarWithUpNavigation
@@ -41,6 +42,15 @@ class PlaceDetailsActivity : BaseMvpActivity<PlaceDetailsView, PlaceDetailsPrese
             from.startActivity(PlaceDetailsActivity::class, bundle)
         }
     }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        android.R.id.home -> {
+            this.finish()
+            true
+        }
+        else -> true
+    }
+
 
     override fun onViewCreated(savedInstanceState: Bundle?) {
         setupToolbarWithUpNavigation(toolbar)
