@@ -6,8 +6,8 @@ import android.content.Context
 import com.atc.planner.App
 import com.atc.planner.R
 import com.atc.planner.commons.*
-import com.atc.planner.commons.CustomInterceptor
 import com.atc.planner.di.qualifiers.NullOnEmptyConverterFactory
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.sygic.travel.sdk.StSDK
@@ -102,11 +102,18 @@ class CommonModule {
 
     @Provides
     @Singleton
-    fun sygicSdk(app: App) : StSDK {
+    fun sygicSdk(app: App): StSDK {
         StSDK.initialize(app.getString(R.string.sygic_api_key), app)
         return StSDK.getInstance()
     }
 
     @Provides
-    fun bitmapProvider(app: App) : BitmapProvider = BitmapProviderImpl(app)
+    fun bitmapProvider(app: App): BitmapProvider = BitmapProviderImpl(app)
+
+    @Provides
+    fun cityProvider(app: App): CityProvider = CityProviderImpl(app)
+
+    @Provides
+    @Singleton
+    fun firestore(): FirebaseFirestore = FirebaseFirestore.getInstance()
 }

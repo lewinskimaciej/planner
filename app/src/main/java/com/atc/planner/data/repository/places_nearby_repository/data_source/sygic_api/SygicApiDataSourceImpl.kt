@@ -21,7 +21,7 @@ class SygicApiDataSourceImpl @Inject constructor(private val stSDK: StSDK)
         val placesQuery = PlacesQuery()
         placesQuery.bounds = latLng.boundingBox(radius)
         placesQuery.categories = categories.map { it.value }
-        placesQuery.limit = 100
+        placesQuery.limit = 512
 
         stSDK.getPlaces(placesQuery, object : Callback<List<Place?>?>() {
             override fun onSuccess(data: List<Place?>?) {

@@ -113,10 +113,12 @@ class MapFragment : BaseMvpFragment<MapView, MapPresenter>(), MapView, OnMapRead
     }
 
     override fun zoomToFitAllMarkers() {
-        val builder = LatLngBounds.Builder()
-        currentItems.forEach { builder.include(it.value.location?.asLatLng()) }
-        val bounds = builder.build()
-        map?.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 20))
+        if (currentItems.isNotEmpty()) {
+            val builder = LatLngBounds.Builder()
+            currentItems.forEach { builder.include(it.value.location?.asLatLng()) }
+            val bounds = builder.build()
+            map?.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 20))
+        }
     }
 
     override fun goToPlaceDetails(placeDetailsBundle: PlaceDetailsBundle) {

@@ -18,7 +18,11 @@ class PictureItem(private var url: String?) : AbstractItem<PictureItem, PictureI
 
     override fun bindView(holder: ViewHolder?, payloads: MutableList<Any>?) {
         super.bindView(holder, payloads)
-        holder?.picture?.loadImage(url)
+        if (url.isNullOrEmpty()) {
+            holder?.picture?.setImageDrawable(null)
+        } else {
+            holder?.picture?.loadImage(url)
+        }
     }
 
     override fun unbindView(holder: ViewHolder?) {

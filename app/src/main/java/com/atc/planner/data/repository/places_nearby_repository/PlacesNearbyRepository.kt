@@ -7,10 +7,9 @@ import com.google.android.gms.maps.model.LatLng
 import io.reactivex.Single
 
 interface PlacesNearbyRepository {
-    // TODO: return local model instead of remote one
     fun getRestaurantsNearby(latLng: LatLng, radius: Int): Single<NearbyPlacesEnvelope<PlaceDetails>>
 
     fun getRestaurantsNearby(nextPageToken: String?): Single<NearbyPlacesEnvelope<PlaceDetails>>
 
-    fun getSightsNearby(latLng: LatLng, radius: Int): Single<List<LocalPlace>>
+    fun getSightsNearby(latLng: LatLng): Single<List<LocalPlace>>
 }

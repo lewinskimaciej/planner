@@ -33,7 +33,7 @@ class MainPresenter @Inject constructor(private val stringProvider: StringProvid
             currentLocation = it?.asLatLong()
 
             currentLocation?.let {
-                placesNearbyRepository.getSightsNearby(it, 10000)
+                placesNearbyRepository.getSightsNearby(it)
                         .subscribeOn(Schedulers.io())
                         .observeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
