@@ -25,4 +25,19 @@ fun LatLng.boundingBox(radius: Int): Bounds? {
 
 fun Location?.asLatLong(): LatLong = LatLong(this?.lat.orZero().toDouble(), this?.lng.orZero().toDouble())
 
+fun Location?.asLatLng(): LatLng = LatLng(this?.lat.orZero().toDouble(), this?.lng.orZero().toDouble())
+
 fun LatLong?.asLatLng(): LatLng = LatLng(this?.lat.orZero(), this?.long.orZero())
+
+fun LatLng.distanceTo(other: LatLng): Float = LatLong(this.latitude, this.longitude).distanceTo(LatLong(other.latitude, other.longitude))
+
+fun LatLong.distanceTo(other: LatLong): Float {
+    val start = android.location.Location("Starting point")
+    start.latitude = this.lat.orZero()
+    start.longitude = this.long.orZero()
+    val end = android.location.Location("Ending point")
+    end.latitude = other.lat.orZero()
+    end.longitude = other.long.orZero()
+
+    return start.distanceTo(end)
+}

@@ -1,11 +1,11 @@
 package com.atc.planner.presentation.base
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.annotation.LayoutRes
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
-import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.atc.planner.R
@@ -18,7 +18,7 @@ import dagger.android.support.HasSupportFragmentInjector
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
-abstract class BaseMvpActivity<V : BaseView, P : BasePresenter<V>> : MvpActivity<V, P>(),
+abstract class BaseMvpActivity<V : BaseView, P : BaseMvpPresenter<V>> : MvpActivity<V, P>(),
         HasFragmentInjector,
         HasSupportFragmentInjector,
         BaseView {
@@ -46,6 +46,12 @@ abstract class BaseMvpActivity<V : BaseView, P : BasePresenter<V>> : MvpActivity
 
     }
 
+    override fun onNewIntent(intent: Intent) {
+        val extras = intent.extras?.getSerializable(BaseDictionary.KEY_SERIALIZABLE)
+        presenter?.onNewBundle(extras)
+
+        super.onNewIntent(intent)
+    }
 
     override fun onDestroy() {
         super.onDestroy()

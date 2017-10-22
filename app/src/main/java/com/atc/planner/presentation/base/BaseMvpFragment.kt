@@ -21,7 +21,7 @@ import io.reactivex.disposables.CompositeDisposable
 import java.io.Serializable
 import javax.inject.Inject
 
-abstract class BaseMvpFragment<V : BaseView, P : BasePresenter<V>> : MvpFragment<V, P>(),
+abstract class BaseMvpFragment<V : BaseView, P : BaseMvpPresenter<V>> : MvpFragment<V, P>(),
         BaseView,
         HasSupportFragmentInjector {
 

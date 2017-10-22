@@ -36,6 +36,11 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), MainView {
                 .commitAllowingStateLoss()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        presenter?.onDestroy()
+    }
+
     override fun askForLocationPermission() {
         rxPermissions.request(android.Manifest.permission.ACCESS_FINE_LOCATION)
                 .subscribe({

@@ -16,4 +16,8 @@
     <string name="location_permission_refused_dialog_title">Location permission is needed</string>
     <string name="location_permission_refused_dialog_content">In order to properly work and provide you with ideas, we need to know your location</string>
     <string name="learn_more">Learn more</string>
+    <string name="may_be_worth_seeing">may be worth seeing</string>
+    <string name="sights_channel_id">SIGHTS_CHANNEL_ID</string>
+    <string name="sights_channel_name">Sights around you</string>
+    <string name="see_more_details">See more details…</string>
 </resources>

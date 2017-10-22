@@ -6,7 +6,7 @@ import com.atc.planner.commons.StringProvider
 import com.atc.planner.data.repository.places_nearby_repository.PlacesNearbyRepository
 import com.atc.planner.di.scopes.ActivityScope
 import com.atc.planner.extensions.asLatLong
-import com.atc.planner.presentation.base.BasePresenter
+import com.atc.planner.presentation.base.BaseMvpPresenter
 import com.github.ajalt.timberkt.d
 import com.github.ajalt.timberkt.e
 import com.google.android.gms.maps.model.LatLng
@@ -19,7 +19,7 @@ import javax.inject.Inject
 class MainPresenter @Inject constructor(private val stringProvider: StringProvider,
                                         private val locationProvider: LocationProvider,
                                         private val placesNearbyRepository: PlacesNearbyRepository)
-    : BasePresenter<MainView>() {
+    : BaseMvpPresenter<MainView>() {
 
     private var currentLocation: LatLng? = null
 
@@ -44,12 +44,18 @@ class MainPresenter @Inject constructor(private val stringProvider: StringProvid
         }, {
             e(it)
         })
+        locationProvider.startService()
     }
+
 
     fun onPermissionsRefused() {
         d { "onPermissionsRefused" }
         view?.showAlertDialog(stringProvider.getString(R.string.location_permission_refused_dialog_title),
                 stringProvider.getString(R.string.location_permission_refused_dialog_content))
         view?.askForLocationPermission()
+    }
+
+    fun onDestroy() {
+        locationProvider.stopService()
     }
 }
