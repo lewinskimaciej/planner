@@ -8,22 +8,20 @@ import com.atc.planner.R
 import com.atc.planner.commons.*
 import com.atc.planner.di.qualifiers.NullOnEmptyConverterFactory
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.sygic.travel.sdk.StSDK
 import dagger.Module
 import dagger.Provides
-import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import org.altbeacon.beacon.BeaconManager
 import org.joda.time.DateTime
 import retrofit2.Converter
 import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
-import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.reflect.Type
-import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
+
 
 @Module
 class CommonModule {
@@ -85,7 +83,16 @@ class CommonModule {
 
     @Provides
     @Singleton
-    fun firestore(): FirebaseFirestore = FirebaseFirestore.getInstance()
+    fun firestore(): FirebaseFirestore {
+        val settings = FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(true)
+                .build()
+
+        val instance = FirebaseFirestore.getInstance()
+        instance.firestoreSettings = settings
+
+        return instance
+    }
 
     @Provides
     @Singleton

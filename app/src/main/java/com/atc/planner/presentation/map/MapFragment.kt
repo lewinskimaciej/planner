@@ -1,13 +1,9 @@
 package com.atc.planner.presentation.map
 
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import com.atc.planner.R
-import com.atc.planner.commons.BitmapProvider
 import com.atc.planner.data.models.local.LocalPlace
 import com.atc.planner.extensions.asLatLng
-import com.atc.planner.extensions.dpToPx
-import com.atc.planner.extensions.resize
 import com.atc.planner.presentation.base.BaseMvpFragment
 import com.atc.planner.presentation.place_details.PlaceDetailsActivity
 import com.atc.planner.presentation.place_details.PlaceDetailsBundle
@@ -16,7 +12,10 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.*
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
 import com.tbruyelle.rxpermissions2.RxPermissions
 import javax.inject.Inject
 
@@ -27,9 +26,6 @@ class MapFragment : BaseMvpFragment<MapView, MapPresenter>(), MapView, OnMapRead
 
     @Inject
     lateinit var mapPresenter: MapPresenter
-
-    @Inject
-    lateinit var bitmapProvider: BitmapProvider
 
     lateinit var rxPermissions: RxPermissions
 
@@ -91,25 +87,9 @@ class MapFragment : BaseMvpFragment<MapView, MapPresenter>(), MapView, OnMapRead
         map?.clear()
     }
 
-    override fun addMarker(item: LocalPlace) {
-        item.location?.let {
-            val markerOptions = MarkerOptions()
-            markerOptions.position(it.asLatLng())
-            bitmapProvider.getRoundedBitmap(item.thumbnailUrl,
-                    {
-                        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(it?.resize(32.dpToPx().toInt(), 32.dpToPx().toInt())))
-                        val marker = map?.addMarker(markerOptions)
-                        currentItems.put(marker, item)
-                    },
-                    {
-                        val bitmap = BitmapFactory.decodeResource(resources, R.drawable.error_marker)
-
-                        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(bitmap.resize(32.dpToPx().toInt(), 32.dpToPx().toInt())))
-                        val marker = map?.addMarker(markerOptions)
-                        currentItems.put(marker, item)
-                    })
-
-        }
+    override fun addMarker(options: MarkerOptions?, place: LocalPlace) {
+        val marker = map?.addMarker(options)
+        currentItems.put(marker, place)
     }
 
     override fun zoomToFitAllMarkers() {
@@ -118,6 +98,8 @@ class MapFragment : BaseMvpFragment<MapView, MapPresenter>(), MapView, OnMapRead
             currentItems.forEach { builder.include(it.value.location?.asLatLng()) }
             val bounds = builder.build()
             map?.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 20))
+        } else if (usersLocationMarker != null) {
+            map?.animateCamera(CameraUpdateFactory.newLatLngZoom(usersLocationMarker?.position,14f))
         }
     }
 

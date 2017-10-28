@@ -2,23 +2,33 @@ package com.atc.planner.presentation.map
 
 import android.location.Location
 import com.atc.planner.R
+import com.atc.planner.commons.BitmapProvider
 import com.atc.planner.commons.LocationProvider
 import com.atc.planner.commons.StringProvider
 import com.atc.planner.data.models.local.LocalPlace
 import com.atc.planner.di.scopes.FragmentScope
+import com.atc.planner.extensions.asLatLng
 import com.atc.planner.extensions.asLatLong
+import com.atc.planner.extensions.dpToPx
+import com.atc.planner.extensions.resize
 import com.atc.planner.presentation.base.BaseMvpPresenter
 import com.atc.planner.presentation.place_details.PlaceDetailsBundle
-import com.github.ajalt.timberkt.e
+import com.github.ajalt.timberkt.Timber.e
 import com.google.android.gms.location.LocationListener
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import java.io.Serializable
 import javax.inject.Inject
 
 
 @FragmentScope
 class MapPresenter @Inject constructor(private val stringProvider: StringProvider,
-                                       private val locationProvider: LocationProvider)
+                                       private val locationProvider: LocationProvider,
+                                       private var bitmapProvider: BitmapProvider)
     : BaseMvpPresenter<MapView>(), LocationListener {
 
     companion object {
@@ -72,6 +82,7 @@ class MapPresenter @Inject constructor(private val stringProvider: StringProvide
         if (currentLocation != null) {
             currentLocation?.let {
                 view?.showCurrentLocation(it)
+                view?.zoomToFitAllMarkers()
             }
         } else {
             showDefaultLocation()
@@ -83,19 +94,50 @@ class MapPresenter @Inject constructor(private val stringProvider: StringProvide
     }
 
     fun onSetData(items: List<LocalPlace>) {
-        if (isMapReady) {
-            items.forEach { view?.addMarker(it) }
-            view?.zoomToFitAllMarkers()
-        }
+        handlePlaces(items)
     }
 
     fun onAddData(items: List<LocalPlace>) {
+        handlePlaces(items)
+    }
+
+    private fun handlePlaces(items: List<LocalPlace>) {
         if (isMapReady) {
-            items.forEach { view?.addMarker(it) }
+            Observable.create<Pair<MarkerOptions, LocalPlace>> { emitter ->
+                var counter = 1
+                items.forEach { place ->
+                    val markerOptions = MarkerOptions()
+                    place.location?.asLatLng()?.let { placeLocation ->
+                        markerOptions.position(placeLocation)
+                        bitmapProvider.getRoundedBitmap(place.thumbnailUrl, R.drawable.error_marker, {
+                            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(it?.resize(32.dpToPx().toInt(), 32.dpToPx().toInt())))
+                            emitter.onNext(Pair(markerOptions, place))
+
+                            counter++
+                            if (counter == items.size) {
+                                emitter.onComplete()
+                            }
+                        }, {
+                            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(it.resize(32.dpToPx().toInt(), 32.dpToPx().toInt())))
+                            emitter.onNext(Pair(markerOptions, place))
+
+                            counter++
+                            if (counter == items.size) {
+                                emitter.onComplete()
+                            }
+                        })
+                    }
+                }
+            }.subscribeOn(AndroidSchedulers.mainThread())
+                    .subscribe({ (markerOptions, place) ->
+                        view?.addMarker(markerOptions, place)
+                    }, ::e, {
+                        view?.zoomToFitAllMarkers()
+                    })
         }
     }
 
-    fun onItemClick(localPlace: LocalPlace?){
+    fun onItemClick(localPlace: LocalPlace?) {
         view?.goToPlaceDetails(PlaceDetailsBundle(localPlace))
     }
 }

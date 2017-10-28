@@ -29,6 +29,8 @@ fun Location?.asLatLng(): LatLng = LatLng(this?.lat.orZero().toDouble(), this?.l
 
 fun LatLong?.asLatLng(): LatLng = LatLng(this?.lat.orZero(), this?.long.orZero())
 
+fun LatLng?.asLatLong(): LatLong = LatLong(this?.latitude, this?.longitude)
+
 fun LatLng.distanceTo(other: LatLng): Float = LatLong(this.latitude, this.longitude).distanceTo(LatLong(other.latitude, other.longitude))
 
 fun LatLong.distanceTo(other: LatLong): Float {
