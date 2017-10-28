@@ -15,6 +15,7 @@ import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
+import org.altbeacon.beacon.BeaconManager
 import org.joda.time.DateTime
 import retrofit2.Converter
 import retrofit2.Retrofit
@@ -27,40 +28,9 @@ import javax.inject.Singleton
 @Module
 class CommonModule {
 
-    companion object {
-        private val DEFAULT_TIMEOUT = 30
-    }
-
     @Provides
     @Singleton
     fun application(application: Application): Context = application
-
-    @Provides
-    @Singleton
-    fun okHttpClient(context: Application): OkHttpClient = OkHttpClient.Builder()
-            .readTimeout(DEFAULT_TIMEOUT.toLong(), TimeUnit.SECONDS)
-            .connectTimeout(DEFAULT_TIMEOUT.toLong(), TimeUnit.SECONDS)
-            .addInterceptor(CustomInterceptor.loggingInterceptor())
-            .build()
-
-    @Provides
-    @Singleton
-    fun retrofit(context: Application,
-                 okHttpClient: OkHttpClient,
-                 gson: Gson,
-                 @NullOnEmptyConverterFactory nullOnEmptyConverterFactory: Converter.Factory): Retrofit {
-        val baseUrl = context.getString(R.string.api_path)
-
-        return Retrofit.Builder()
-                .addConverterFactory(nullOnEmptyConverterFactory)
-                .baseUrl(baseUrl)
-                .client(okHttpClient)
-                .addConverterFactory(
-                        GsonConverterFactory.create(gson)
-                )
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .build()
-    }
 
 
     @Provides
@@ -116,4 +86,8 @@ class CommonModule {
     @Provides
     @Singleton
     fun firestore(): FirebaseFirestore = FirebaseFirestore.getInstance()
+
+    @Provides
+    @Singleton
+    fun beaconManager(app: App): BeaconManager = BeaconManager.getInstanceForApplication(app)
 }

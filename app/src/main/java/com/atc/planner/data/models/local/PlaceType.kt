@@ -1,6 +1,5 @@
 package com.atc.planner.data.models.local
 
-import com.atc.planner.data.models.remote.places_api.Type
 import com.atc.planner.data.models.remote.sygic_api.Category
 
 enum class PlaceType {
@@ -16,18 +15,6 @@ fun Category?.asPlaceType(): PlaceType = when (this) {
     Category.RELAXING -> PlaceType.AMUSEMENT
 
     Category.SIGHTSEEING -> PlaceType.SIGHT
-
-    else -> PlaceType.OTHER
-}
-
-fun Type?.asPlaceType(): PlaceType = when(this) {
-    Type.BOWLING_ALLEY,
-    Type.ZOO,
-    Type.NIGHT_CLUB,
-    Type.AQUARIUM,
-    Type.AMUSEMENT_PARK -> PlaceType.AMUSEMENT
-
-    Type.RESTAURANT -> PlaceType.FOOD
 
     else -> PlaceType.OTHER
 }

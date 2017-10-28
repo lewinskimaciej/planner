@@ -9,8 +9,11 @@ import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.support.v4.app.NotificationCompat
+import com.atc.planner.BuildConfig
 import com.atc.planner.R
 import com.atc.planner.commons.LocationProvider
+import com.atc.planner.data.models.local.BeaconPlace
+import com.atc.planner.data.models.local.BeaconSeenEvent
 import com.atc.planner.data.models.local.LocalPlace
 import com.atc.planner.data.repository.places_nearby_repository.PlacesNearbyRepository
 import com.atc.planner.extensions.asLatLng
@@ -24,22 +27,27 @@ import com.github.ajalt.timberkt.e
 import com.google.android.gms.location.LocationListener
 import com.google.android.gms.maps.model.LatLng
 import dagger.android.DaggerService
+import io.paperdb.Paper
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import org.altbeacon.beacon.*
 import java.util.*
 import javax.inject.Inject
 
 const val MIN_METERS_TO_PLACE = 50
 
-class SearchService : DaggerService(), LocationListener {
+class SearchService : DaggerService(), LocationListener, BeaconConsumer {
 
     @Inject
     lateinit var locationProvider: LocationProvider
     @Inject
     lateinit var placesNearbyRepository: PlacesNearbyRepository
+    @Inject
+    lateinit var beaconManager: BeaconManager
 
     private var sightsNearby: List<LocalPlace> = listOf()
+    private var beaconsNearby: List<BeaconPlace> = listOf()
     private var placesWithNotificationShown: ArrayList<LocalPlace> = arrayListOf()
 
     private lateinit var notificationManager: NotificationManager
@@ -67,6 +75,15 @@ class SearchService : DaggerService(), LocationListener {
             notificationManager.createNotificationChannel(channel)
         }
 
+        // set beacon layout to default iBeacon
+        beaconManager.beaconParsers.add(BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"))
+        beaconManager.isRegionStatePersistenceEnabled = false
+        beaconManager.foregroundScanPeriod = 5000
+        beaconManager.foregroundBetweenScanPeriod = 30000
+        beaconManager.bind(this)
+
+        locationProvider.getLastLocation({ onLocationChanged(it) }, ::e)
+
         return Service.START_STICKY
     }
 
@@ -74,6 +91,49 @@ class SearchService : DaggerService(), LocationListener {
         d { "onDestroy" }
         super.onDestroy()
         locationProvider.removeListener(this)
+        beaconManager.unbind(this)
+    }
+
+    override fun onBeaconServiceConnect() {
+        beaconManager.addRangeNotifier { beacons, region ->
+            d { "didRangeBeaconsInRegion $region ${beacons.size}" }
+            handleBeaconsNearby(beacons)
+        }
+        beaconManager.startRangingBeaconsInRegion(Region(BuildConfig.APPLICATION_ID, Identifier.parse(getString(R.string.beacon_uuids)), null, null))
+    }
+
+    private fun handleBeaconsNearby(beacons: Collection<Beacon>) {
+
+        var seenBeacons = Paper.book().read<ArrayList<BeaconSeenEvent>>(BeaconSeenEvent::class.java.simpleName)
+        if (seenBeacons == null) {
+            seenBeacons = arrayListOf()
+        }
+
+        if (beaconsNearby.isNotEmpty()) {
+            beacons.forEach { beacon ->
+                val matchedBeacon = beaconsNearby.find {
+                    it.uuid == beacon.id1.toString()
+                            && it.major == beacon.id2.toString()
+                            && it.minor == beacon.id3.toString()
+                }
+                // check for matching beacon in database
+                if (matchedBeacon != null) {
+                    if (seenBeacons.isNotEmpty()) {
+                        val beaconOnSeenList = seenBeacons.find {
+                            it.uuid == matchedBeacon.uuid
+                                    && it.major == matchedBeacon.major
+                                    && it.minor == matchedBeacon.minor
+                        }
+                        // show place only when it hasn't been seen yet
+                        if (beaconOnSeenList == null) {
+                            showNotificationForBeacon(matchedBeacon)
+                        }
+                    } else {
+                        showNotificationForBeacon(matchedBeacon)
+                    }
+                }
+            }
+        }
     }
 
     override fun onLocationChanged(p0: Location?) {
@@ -86,15 +146,22 @@ class SearchService : DaggerService(), LocationListener {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe({
                             sightsNearby = it
-                            checkIfCloseToAnything(latLong)
+                            checkIfCloseToPlaceByLocation(latLong)
                         }, ::e)
             } else {
-                checkIfCloseToAnything(latLong)
+                checkIfCloseToPlaceByLocation(latLong)
+            }
+
+            if (beaconsNearby.isEmpty()) {
+                placesNearbyRepository.getBeaconsNearby(latLong)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe({ beaconsNearby = it }, ::e)
             }
         }
     }
 
-    private fun checkIfCloseToAnything(latLong: LatLng) {
+    private fun checkIfCloseToPlaceByLocation(latLong: LatLng) {
         Observable.fromIterable(sightsNearby)
                 .subscribeOn(Schedulers.computation())
                 .filter { latLong.distanceTo(it.location.asLatLng()) <= MIN_METERS_TO_PLACE }
@@ -107,6 +174,19 @@ class SearchService : DaggerService(), LocationListener {
                 .subscribe({
                     handleNotification(it)
                 }, ::e)
+    }
+
+    private fun showNotificationForBeacon(matchedBeacon: BeaconPlace) {
+        var seenBeacons = Paper.book().read<ArrayList<BeaconSeenEvent>>(BeaconSeenEvent::class.java.simpleName)
+        if (seenBeacons == null) {
+            seenBeacons = arrayListOf()
+        }
+        seenBeacons.add(BeaconSeenEvent(System.currentTimeMillis(), matchedBeacon.uuid, matchedBeacon.major, matchedBeacon.minor))
+        Paper.book().write(BeaconSeenEvent::class.java.simpleName, seenBeacons)
+
+        matchedBeacon.localPlace?.let {
+            handleNotification(listOf(it))
+        }
     }
 
     private fun handleNotification(placesNearby: List<LocalPlace>) {
@@ -142,7 +222,5 @@ class SearchService : DaggerService(), LocationListener {
             placesWithNotificationShown.add(it)
             d { "Showing notification for ${it.name}" }
         }
-
     }
-
 }

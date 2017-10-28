@@ -10,7 +10,6 @@ import javax.inject.Singleton
 @Singleton
 @Component(modules = arrayOf(AppModule::class,
         CommonModule::class,
-        RemoteServiceModule::class,
         RepositoryModule::class,
 
         ActivityBindingModule::class,

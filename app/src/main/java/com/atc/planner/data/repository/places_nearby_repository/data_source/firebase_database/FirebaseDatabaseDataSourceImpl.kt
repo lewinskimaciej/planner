@@ -44,6 +44,7 @@ class FirebaseDatabaseDataSourceImpl @Inject constructor(private val firebaseFir
                         val place = gson.fromJson<BeaconPlace>(json, BeaconPlace::class.java)
                         emitter.onNext(place)
                     }
+                    emitter.onComplete()
                 }
                 .addOnFailureListener {
                     emitter.onError(it)

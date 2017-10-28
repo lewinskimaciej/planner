@@ -1,6 +1,6 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Planner</string>
-    <string name="api_path">https://www.google.pl</string>
+    <string name="beacon_uuids" tools:ignore="TypographyDashes">fda50693-a4e2-4fb1-afcf-c6eb07647825</string>
 
     <!--Titles-->
     <string name="title_activity_main">Planner</string>

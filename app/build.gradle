@@ -102,6 +102,8 @@ dependencies {
     }
     implementation 'com.mikepenz:fastadapter-commons:2.6.3@aar'
 
+    implementation 'org.altbeacon:android-beacon-library:2.12.3'
+
     configurations.all {
         resolutionStrategy {
             force 'org.objenesis:objenesis:2.2'
