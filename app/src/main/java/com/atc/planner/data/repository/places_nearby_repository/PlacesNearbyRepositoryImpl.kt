@@ -27,6 +27,10 @@ class PlacesNearbyRepositoryImpl @Inject constructor(private val placesApiDataSo
     var lastSightsDownloadTime: DateTime? = null
     var lastCitySightsWereDownloadedFor: String? = null
 
+    var beaconsNearby: List<LocalPlace> = listOf()
+    var lastBeaconsDownloadTime: DateTime? = null
+    var lastCityBeaconsWereDownloadedFor: String? = null
+
     override fun getRestaurantsNearby(latLng: LatLng, radius: Int): Single<NearbyPlacesEnvelope<PlaceDetails>>
             = placesApiDataSource.getPlaces(latLng, radius, RankBy.PROMINENCE, Type.RESTAURANT)
 
@@ -49,7 +53,27 @@ class PlacesNearbyRepositoryImpl @Inject constructor(private val placesApiDataSo
                 lastSightsDownloadTime = DateTime.now()
             }
         } else {
-            Single.error(NoSuchElementException("City for these coordinates not found"))
+            Single.error(NoSuchElementException("City for these coordinates was not found"))
+        }
+    }
+
+    override fun getBeaconsNearby(latLng: LatLng): Single<List<LocalPlace>> {
+        val city = cityProvider.getCity(latLng)
+        // if city is same as before, and last call was recent, return cached response
+        if (lastCityBeaconsWereDownloadedFor == city
+                && DateTime.now().millis - lastBeaconsDownloadTime?.millis.orZero() > 1000 * 60 * 5
+                && beaconsNearby.isNotEmpty()) {
+            return Single.just(beaconsNearby)
+        }
+
+        return if (city != null) {
+            firebaseDatabaseDataSource.getBeaconsNearby(city).doOnSuccess {
+                beaconsNearby = it
+                lastCityBeaconsWereDownloadedFor = city
+                lastBeaconsDownloadTime = DateTime.now()
+            }
+        } else {
+            Single.error(NoSuchElementException("City for these coordinates was not found"))
         }
     }
 }

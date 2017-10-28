@@ -12,4 +12,5 @@ interface PlacesNearbyRepository {
     fun getRestaurantsNearby(nextPageToken: String?): Single<NearbyPlacesEnvelope<PlaceDetails>>
 
     fun getSightsNearby(latLng: LatLng): Single<List<LocalPlace>>
+    fun getBeaconsNearby(latLng: LatLng): Single<List<LocalPlace>>
 }

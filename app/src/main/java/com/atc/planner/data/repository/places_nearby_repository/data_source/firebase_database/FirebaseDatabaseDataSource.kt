@@ -8,4 +8,5 @@ import io.reactivex.Single
 interface FirebaseDatabaseDataSource {
     fun savePlace(localPlace: LocalPlace): Completable
     fun getPlaces(city: String): Single<List<LocalPlace>>
+    fun getBeaconsNearby(city: String): Single<List<LocalPlace>>
 }
