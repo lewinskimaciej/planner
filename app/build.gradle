@@ -93,10 +93,6 @@ dependencies {
     implementation "com.jakewharton.rxbinding2:rxbinding-appcompat-v7-kotlin:2.0.0"
     implementation 'com.jakewharton.rxbinding2:rxbinding-recyclerview-v7-kotlin:2.0.0'
 
-    implementation "io.objectbox:objectbox-android:$objectboxVersion"
-    implementation "io.objectbox:objectbox-kotlin:$objectboxVersion"
-    kapt "io.objectbox:objectbox-processor:$objectboxVersion"
-
     implementation('com.sygic.travel:sdk:1.0.1@aar') {
         transitive = true
     }
