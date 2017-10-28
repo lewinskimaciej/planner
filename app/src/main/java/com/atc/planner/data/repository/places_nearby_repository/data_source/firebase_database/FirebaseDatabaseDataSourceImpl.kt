@@ -1,5 +1,6 @@
 package com.atc.planner.data.repository.places_nearby_repository.data_source.firebase_database
 
+import com.atc.planner.data.models.local.BeaconPlace
 import com.atc.planner.data.models.local.LocalPlace
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.Gson
@@ -34,13 +35,13 @@ class FirebaseDatabaseDataSourceImpl @Inject constructor(private val firebaseFir
                 }
     }.toList()
 
-    override fun getBeaconsNearby(city: String): Single<List<LocalPlace>> = Observable.create<LocalPlace> { emitter ->
+    override fun getBeaconsNearby(city: String): Single<List<BeaconPlace>> = Observable.create<BeaconPlace> { emitter ->
         firebaseFirestore.collection("beacons")
                 .get()
                 .addOnSuccessListener {
                     it.forEach {
                         val json = gson.toJson(it.data)
-                        val place = gson.fromJson<LocalPlace>(json, LocalPlace::class.java)
+                        val place = gson.fromJson<BeaconPlace>(json, BeaconPlace::class.java)
                         emitter.onNext(place)
                     }
                 }

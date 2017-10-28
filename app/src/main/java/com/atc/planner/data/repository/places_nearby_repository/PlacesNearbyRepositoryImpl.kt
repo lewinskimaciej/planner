@@ -1,6 +1,7 @@
 package com.atc.planner.data.repository.places_nearby_repository
 
 import com.atc.planner.commons.CityProvider
+import com.atc.planner.data.models.local.BeaconPlace
 import com.atc.planner.data.models.local.LocalPlace
 import com.atc.planner.data.models.remote.places_api.NearbyPlacesEnvelope
 import com.atc.planner.data.models.remote.places_api.PlaceDetails
@@ -27,7 +28,7 @@ class PlacesNearbyRepositoryImpl @Inject constructor(private val placesApiDataSo
     var lastSightsDownloadTime: DateTime? = null
     var lastCitySightsWereDownloadedFor: String? = null
 
-    var beaconsNearby: List<LocalPlace> = listOf()
+    var beaconsNearby: List<BeaconPlace> = listOf()
     var lastBeaconsDownloadTime: DateTime? = null
     var lastCityBeaconsWereDownloadedFor: String? = null
 
@@ -57,7 +58,7 @@ class PlacesNearbyRepositoryImpl @Inject constructor(private val placesApiDataSo
         }
     }
 
-    override fun getBeaconsNearby(latLng: LatLng): Single<List<LocalPlace>> {
+    override fun getBeaconsNearby(latLng: LatLng): Single<List<BeaconPlace>> {
         val city = cityProvider.getCity(latLng)
         // if city is same as before, and last call was recent, return cached response
         if (lastCityBeaconsWereDownloadedFor == city
