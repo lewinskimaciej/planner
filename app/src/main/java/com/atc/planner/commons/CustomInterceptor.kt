@@ -4,14 +4,11 @@ import android.annotation.TargetApi
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Build
-
 import com.atc.planner.BuildConfig
 import com.ihsanbal.logging.Level
 import com.ihsanbal.logging.LoggingInterceptor
-
-import java.util.Locale
-
 import okhttp3.internal.platform.Platform
+import java.util.*
 
 object CustomInterceptor {
 

@@ -4,7 +4,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.support.annotation.DrawableRes
-import android.support.annotation.IdRes
 import com.atc.planner.App
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions

@@ -6,7 +6,7 @@ import java.io.Serializable
 import javax.inject.Inject
 
 @ActivityScope
-class PlaceDetailsPresenter @Inject constructor(): BaseMvpPresenter<PlaceDetailsView>() {
+class PlaceDetailsPresenter @Inject constructor() : BaseMvpPresenter<PlaceDetailsView>() {
 
     private var placeDetailsBundle: PlaceDetailsBundle? = null
 

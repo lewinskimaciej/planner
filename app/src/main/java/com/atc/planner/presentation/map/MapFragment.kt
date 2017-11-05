@@ -99,7 +99,7 @@ class MapFragment : BaseMvpFragment<MapView, MapPresenter>(), MapView, OnMapRead
             val bounds = builder.build()
             map?.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 20))
         } else if (usersLocationMarker != null) {
-            map?.animateCamera(CameraUpdateFactory.newLatLngZoom(usersLocationMarker?.position,14f))
+            map?.animateCamera(CameraUpdateFactory.newLatLngZoom(usersLocationMarker?.position, 14f))
         }
     }
 

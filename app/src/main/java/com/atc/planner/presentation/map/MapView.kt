@@ -4,7 +4,6 @@ import com.atc.planner.data.models.local.LocalPlace
 import com.atc.planner.presentation.base.BaseView
 import com.atc.planner.presentation.place_details.PlaceDetailsBundle
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 
 interface MapView : BaseView {

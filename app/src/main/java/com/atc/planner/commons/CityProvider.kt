@@ -11,7 +11,7 @@ interface CityProvider {
     fun getCity(latLng: LatLng): String?
 }
 
-class CityProviderImpl @Inject constructor(val app: App): CityProvider {
+class CityProviderImpl @Inject constructor(val app: App) : CityProvider {
 
     var geoCoder: Geocoder = Geocoder(app, Locale.getDefault())
 
