@@ -8,6 +8,7 @@ import com.atc.planner.presentation.base.BaseMvpActivity
 import com.atc.planner.presentation.map.MapFragment
 import com.atc.planner.presentation.map.MapView
 import com.github.ajalt.timberkt.e
+import com.google.android.gms.maps.model.LatLng
 import com.tbruyelle.rxpermissions2.RxPermissions
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
@@ -60,5 +61,9 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), MainView {
     override fun addItems(items: List<LocalPlace>) {
         // add markers to map
         (mapFragment as? MapView)?.addData(items)
+    }
+
+    override fun addPolyline(polyline: List<LatLng>) {
+        (mapFragment as? MapView)?.drawPolyline(polyline)
     }
 }

@@ -3,8 +3,10 @@ package com.atc.planner.presentation.main
 import com.atc.planner.R
 import com.atc.planner.commons.LocationProvider
 import com.atc.planner.commons.StringProvider
+import com.atc.planner.data.models.local.LocalPlace
 import com.atc.planner.data.repository.places_nearby_repository.PlacesNearbyRepository
 import com.atc.planner.di.scopes.ActivityScope
+import com.atc.planner.extensions.asLatLng
 import com.atc.planner.extensions.asLatLong
 import com.atc.planner.presentation.base.BaseMvpPresenter
 import com.github.ajalt.timberkt.d
@@ -47,6 +49,17 @@ class MainPresenter @Inject constructor(private val stringProvider: StringProvid
         locationProvider.startService()
     }
 
+    private fun getDirections(source: LocalPlace, dest: LocalPlace) {
+        placesNearbyRepository.getDirections(source.location?.asLatLng()!!, dest.location?.asLatLng()!!)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    d { it.toString() }
+                    if (it.routes.isNotEmpty()) {
+                        view?.addPolyline(decodePoly(it.routes[0].overviewPolyline.points))
+                    }
+                }, ::e)
+    }
 
     fun onPermissionsRefused() {
         d { "onPermissionsRefused" }
@@ -57,5 +70,43 @@ class MainPresenter @Inject constructor(private val stringProvider: StringProvid
 
     fun onDestroy() {
         locationProvider.stopService()
+    }
+
+    private fun decodePoly(encoded: String): List<LatLng> {
+
+        val poly = ArrayList<LatLng>()
+        var index = 0
+        val len = encoded.length
+        var lat = 0
+        var lng = 0
+
+        while (index < len) {
+            var b: Int
+            var shift = 0
+            var result = 0
+            do {
+                b = encoded[index++].toInt() - 63
+                result = result or (b and 0x1f shl shift)
+                shift += 5
+            } while (b >= 0x20)
+            val dlat = if (result and 1 != 0) (result shr 1).inv() else result shr 1
+            lat += dlat
+
+            shift = 0
+            result = 0
+            do {
+                b = encoded[index++].toInt() - 63
+                result = result or (b and 0x1f shl shift)
+                shift += 5
+            } while (b >= 0x20)
+            val dlng = if (result and 1 != 0) (result shr 1).inv() else result shr 1
+            lng += dlng
+
+            val p = LatLng(lat.toDouble() / 1E5,
+                    lng.toDouble() / 1E5)
+            poly.add(p)
+        }
+
+        return poly
     }
 }

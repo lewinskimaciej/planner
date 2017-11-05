@@ -1,5 +1,6 @@
 package com.atc.planner.presentation.map
 
+import android.graphics.Color
 import android.os.Bundle
 import com.atc.planner.R
 import com.atc.planner.data.models.local.LocalPlace
@@ -12,10 +13,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.LatLngBounds
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 import com.tbruyelle.rxpermissions2.RxPermissions
 import javax.inject.Inject
 
@@ -105,5 +103,13 @@ class MapFragment : BaseMvpFragment<MapView, MapPresenter>(), MapView, OnMapRead
 
     override fun goToPlaceDetails(placeDetailsBundle: PlaceDetailsBundle) {
         PlaceDetailsActivity.start(context, placeDetailsBundle)
+    }
+
+    override fun drawPolyline(polyline: List<LatLng>) {
+        val options = PolylineOptions()
+        polyline.forEach { options.add(it) }
+        options.width(12f)
+        options.color(Color.parseColor("#05b1fb"))
+        map?.addPolyline(options)
     }
 }

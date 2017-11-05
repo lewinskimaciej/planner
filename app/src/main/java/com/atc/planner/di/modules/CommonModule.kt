@@ -4,21 +4,28 @@ package com.atc.planner.di.modules
 import android.app.Application
 import android.content.Context
 import com.atc.planner.App
+import com.atc.planner.BuildConfig
 import com.atc.planner.R
 import com.atc.planner.commons.*
 import com.atc.planner.di.qualifiers.NullOnEmptyConverterFactory
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
+import com.google.gson.*
+import com.ihsanbal.logging.Level
+import com.ihsanbal.logging.LoggingInterceptor
 import com.sygic.travel.sdk.StSDK
 import dagger.Module
 import dagger.Provides
+import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
+import okhttp3.internal.platform.Platform
 import org.altbeacon.beacon.BeaconManager
 import org.joda.time.DateTime
+import org.joda.time.DateTimeZone
 import retrofit2.Converter
 import retrofit2.Retrofit
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
+import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.reflect.Type
 import javax.inject.Singleton
 
@@ -44,6 +51,57 @@ class CommonModule {
                     DateTime::class.java,
                     DateTimeSerializer()
             ).create()
+
+    @Provides
+    @Singleton
+    fun provideOkHttpClient(httpLoggingInterceptor: LoggingInterceptor): OkHttpClient {
+        return OkHttpClient.Builder()
+                .addInterceptor(httpLoggingInterceptor)
+                .build()
+    }
+
+    @Provides
+    @Singleton
+    internal fun provideLoggingInterceptor(): LoggingInterceptor {
+        return LoggingInterceptor.Builder()
+                .loggable(BuildConfig.DEBUG)
+                .setLevel(Level.BASIC)
+                .log(Platform.INFO)
+                .request("Http Request")
+                .response("Http Response")
+                .addHeader("version", BuildConfig.VERSION_NAME)
+                .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideRetrofit(app: Application,
+                        gson: Gson,
+                        okHttpClient: OkHttpClient,
+                        @NullOnEmptyConverterFactory nullOnEmptyConverterFactory: Converter.Factory): Retrofit {
+        return Retrofit.Builder()
+                .addConverterFactory(nullOnEmptyConverterFactory)
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .baseUrl(app.getString(R.string.api_path))
+                .client(okHttpClient)
+                .build()
+    }
+
+
+    @Provides
+    @Singleton
+    internal fun provideDateTimeJsonSerializer(): JsonSerializer<DateTime> {
+        return JsonSerializer { src, _, _ -> JsonPrimitive(src.toString()) }
+    }
+
+    @Provides
+    @Singleton
+    internal fun provideDateTimeJsonDeserializer(): JsonDeserializer<DateTime> {
+        return JsonDeserializer { json, _, _ -> DateTime(json.asJsonPrimitive.asString, DateTimeZone.UTC) }
+    }
+
+
 
     @Provides
     @Singleton

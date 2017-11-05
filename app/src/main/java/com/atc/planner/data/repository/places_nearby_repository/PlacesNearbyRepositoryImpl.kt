@@ -1,10 +1,12 @@
 package com.atc.planner.data.repository.places_nearby_repository
 
+import com.atc.planner.R
 import com.atc.planner.commons.CityProvider
+import com.atc.planner.commons.StringProvider
 import com.atc.planner.data.models.local.BeaconPlace
 import com.atc.planner.data.models.local.LocalPlace
+import com.atc.planner.data.remote_services.DirectionsRemoteService
 import com.atc.planner.data.repository.places_nearby_repository.data_source.firebase_database.FirebaseDatabaseDataSource
-import com.atc.planner.data.repository.places_nearby_repository.data_source.sygic_api.SygicApiDataSource
 import com.atc.planner.extensions.orZero
 import com.github.ajalt.timberkt.e
 import com.google.android.gms.maps.model.LatLng
@@ -14,9 +16,10 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class PlacesNearbyRepositoryImpl @Inject constructor(private val sygicApiDataSource: SygicApiDataSource,
-                                                     private val firebaseDatabaseDataSource: FirebaseDatabaseDataSource,
-                                                     private val cityProvider: CityProvider)
+class PlacesNearbyRepositoryImpl @Inject constructor(private val firebaseDatabaseDataSource: FirebaseDatabaseDataSource,
+                                                     private val directionsRemoteService: DirectionsRemoteService,
+                                                     private val cityProvider: CityProvider,
+                                                     private val stringProvider: StringProvider)
     : PlacesNearbyRepository {
 
     var sightsNearby: List<LocalPlace> = listOf()
@@ -70,4 +73,10 @@ class PlacesNearbyRepositoryImpl @Inject constructor(private val sygicApiDataSou
             Single.error(NoSuchElementException("City for these coordinates was not found"))
         }
     }
+
+    override fun getDirections(source: LatLng, dest: LatLng) =
+            directionsRemoteService.getDirections("${source.latitude},${source.longitude}",
+                    "${dest.latitude},${dest.longitude}",
+                    stringProvider.getString(R.string.places_api_key))
+
 }

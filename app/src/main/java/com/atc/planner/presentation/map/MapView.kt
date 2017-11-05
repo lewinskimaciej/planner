@@ -15,4 +15,5 @@ interface MapView : BaseView {
     fun clearMarkers()
     fun zoomToFitAllMarkers()
     fun goToPlaceDetails(placeDetailsBundle: PlaceDetailsBundle)
+    fun drawPolyline(polyline: List<LatLng>)
 }
