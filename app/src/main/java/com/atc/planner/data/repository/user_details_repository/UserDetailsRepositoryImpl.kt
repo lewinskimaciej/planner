@@ -9,7 +9,7 @@ class UserDetailsRepositoryImpl @Inject constructor(private val sharedPreference
                                                     private val gson: Gson) : UserDetailsRepository {
 
     override fun saveFilterDetails(filterDetails: SightsFilterDetails?) {
-        sharedPreferences.edit().putString(SightsFilterDetails::class.java.simpleName, gson.toJson(filterDetails)).apply()
+        sharedPreferences.edit().putString(SightsFilterDetails::class.java.simpleName, gson.toJson(filterDetails)).commit()
     }
 
     override fun getFilterDetails(): SightsFilterDetails? {

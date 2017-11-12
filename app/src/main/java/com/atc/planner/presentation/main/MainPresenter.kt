@@ -4,8 +4,10 @@ import com.atc.planner.R
 import com.atc.planner.commons.LocationProvider
 import com.atc.planner.commons.StringProvider
 import com.atc.planner.data.repository.places_nearby_repository.PlacesNearbyRepository
+import com.atc.planner.data.repository.user_details_repository.UserDetailsRepository
 import com.atc.planner.di.scopes.ActivityScope
 import com.atc.planner.extensions.asLatLong
+import com.atc.planner.extensions.orZero
 import com.atc.planner.presentation.base.BaseMvpPresenter
 import com.github.ajalt.timberkt.d
 import com.github.ajalt.timberkt.e
@@ -18,10 +20,12 @@ import javax.inject.Inject
 @ActivityScope
 class MainPresenter @Inject constructor(private val stringProvider: StringProvider,
                                         private val locationProvider: LocationProvider,
-                                        private val placesNearbyRepository: PlacesNearbyRepository)
+                                        private val placesNearbyRepository: PlacesNearbyRepository,
+                                        private val userDetailsRepository: UserDetailsRepository)
     : BaseMvpPresenter<MainView>() {
 
     private var currentLocation: LatLng? = null
+    private var lastRefreshDate: Long? = null
 
     override fun onViewCreated(data: Serializable?) {
         view?.askForLocationPermission()
@@ -32,19 +36,29 @@ class MainPresenter @Inject constructor(private val stringProvider: StringProvid
         locationProvider.getLastLocation({
             currentLocation = it?.asLatLong()
 
+            getPlacesNearby()
+        }, {
+            e(it)
+        })
+        locationProvider.startService()
+    }
+
+    private fun getPlacesNearby() {
+        if (lastRefreshDate == null || System.currentTimeMillis() - lastRefreshDate.orZero() > 2000) {
             currentLocation?.let {
-                placesNearbyRepository.getSightsNearby(it)
+                val filterDetails = userDetailsRepository.getFilterDetails()
+
+                placesNearbyRepository.getSightsNearby(it, filterDetails)
                         .subscribeOn(Schedulers.io())
                         .observeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe({
                             view?.setItems(it)
                         }, ::e)
+
+                lastRefreshDate = System.currentTimeMillis()
             }
-        }, {
-            e(it)
-        })
-        locationProvider.startService()
+        }
     }
 
     private fun getDirections(source: LatLng, dest: LatLng) {
@@ -109,5 +123,9 @@ class MainPresenter @Inject constructor(private val stringProvider: StringProvid
         }
 
         return poly
+    }
+
+    fun requestRefresh() {
+        getPlacesNearby()
     }
 }

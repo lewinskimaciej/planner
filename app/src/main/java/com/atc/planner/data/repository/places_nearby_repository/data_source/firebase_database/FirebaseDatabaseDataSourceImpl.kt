@@ -3,7 +3,7 @@ package com.atc.planner.data.repository.places_nearby_repository.data_source.fir
 import com.atc.planner.data.models.local.BeaconPlace
 import com.atc.planner.data.models.local.LocalPlace
 import com.atc.planner.data.repository.places_nearby_repository.SightsFilterDetails
-import com.atc.planner.extensions.orMax
+import com.atc.planner.extensions.orZero
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.Gson
 import io.reactivex.Completable
@@ -22,26 +22,8 @@ class FirebaseDatabaseDataSourceImpl @Inject constructor(private val firebaseFir
     }
 
     override fun getPlaces(city: String, filterDetails: SightsFilterDetails?): Single<List<LocalPlace>> = Observable.create<LocalPlace> { emitter ->
-        val query = firebaseFirestore.collection("places")
-        if (filterDetails != null) {
-            query.whereLessThan("entryFee", filterDetails.maxEntryFee.orMax())
-//                .whereEqualTo("childrenFriendly", filterDetails.childrenFriendly)
 
-            if (filterDetails.canBeAMuseum == false) {
-                query.whereEqualTo("isMuseum", false)
-            }
-            if (filterDetails.canBeAnArtGallery == false) {
-                query.whereEqualTo("isArtGallery", false)
-            }
-            if (filterDetails.canBePhysicalActivity == false) {
-                query.whereEqualTo("isPhysicalActivity", false)
-            }
-            if (filterDetails.canBeOutdoors == false) {
-                query.whereEqualTo("isOutdoors", false)
-            }
-        }
-
-        query.get()
+        firebaseFirestore.collection("places").get()
                 .addOnSuccessListener {
                     it.forEach {
                         val json = gson.toJson(it.data)
@@ -53,6 +35,13 @@ class FirebaseDatabaseDataSourceImpl @Inject constructor(private val firebaseFir
                 .addOnFailureListener {
                     emitter.onError(it)
                 }
+    }.filter {
+        it.entryFee.orZero() <= filterDetails?.maxEntryFee.orZero()
+    }.filter {
+        !((filterDetails?.canBeAMuseum == false && it.isMuseum == true)
+                || (filterDetails?.canBeAnArtGallery == false && it.isArtGallery == true)
+                || (filterDetails?.canBePhysicalActivity == false && it.isPhysicalActivity == true)
+                || (filterDetails?.canBeOutdoors == false && it.isOutdoors == true))
     }.toList()
 
     override fun getBeaconsNearby(city: String): Single<List<BeaconPlace>> = Observable.create<BeaconPlace> { emitter ->

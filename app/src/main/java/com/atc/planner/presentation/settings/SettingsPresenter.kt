@@ -42,4 +42,9 @@ class SettingsPresenter @Inject constructor(private val userDetailsRepository: U
         updateFilterDetails()
     }
 
+    fun onMaxEntryFeeChanges(newMaxEntryFee: Float) {
+        filterDetails?.maxEntryFee = newMaxEntryFee
+        updateFilterDetails()
+    }
+
 }

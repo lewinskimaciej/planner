@@ -40,6 +40,12 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), MainView {
                 .commitAllowingStateLoss()
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        presenter?.requestRefresh()
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         return true

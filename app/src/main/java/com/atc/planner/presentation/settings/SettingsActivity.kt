@@ -12,6 +12,7 @@ import com.atc.planner.extensions.startActivity
 import com.atc.planner.presentation.base.BaseMvpActivity
 import com.github.ajalt.timberkt.e
 import com.jakewharton.rxbinding2.widget.checkedChanges
+import com.jakewharton.rxbinding2.widget.textChanges
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_settings.*
 import kotlinx.android.synthetic.main.content_settings.*
@@ -65,6 +66,19 @@ class SettingsActivity : BaseMvpActivity<SettingsView, SettingsPresenter>(), Set
         physical_activity_checkbox.checkedChanges()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ presenter?.onPhysicalActivityCheckboxChanges(it) }, ::e)
+
+        max_entry_fee_edit_text.textChanges()
+                .skipInitialValue()
+                .map {
+                    val text = it.toString()
+                    if (text.isEmpty()) {
+                        0f
+                    } else {
+                        text.toFloat()
+                    }
+                }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ presenter?.onMaxEntryFeeChanges(it) }, ::e)
     }
 
     override fun setUpValues(filterDetails: SightsFilterDetails?) {
