@@ -3,7 +3,6 @@ package com.atc.planner.presentation.main
 import com.atc.planner.R
 import com.atc.planner.commons.LocationProvider
 import com.atc.planner.commons.StringProvider
-import com.atc.planner.data.models.local.LocalPlace
 import com.atc.planner.data.repository.places_nearby_repository.PlacesNearbyRepository
 import com.atc.planner.di.scopes.ActivityScope
 import com.atc.planner.extensions.asLatLng
@@ -41,6 +40,7 @@ class MainPresenter @Inject constructor(private val stringProvider: StringProvid
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe({
                             view?.setItems(it)
+                            getDirections(currentLocation.asLatLong().asLatLng(), it[0].location.asLatLng())
                         }, ::e)
             }
         }, {
@@ -49,15 +49,18 @@ class MainPresenter @Inject constructor(private val stringProvider: StringProvid
         locationProvider.startService()
     }
 
-    private fun getDirections(source: LocalPlace, dest: LocalPlace) {
-        placesNearbyRepository.getDirections(source.location?.asLatLng()!!, dest.location?.asLatLng()!!)
+    private fun getDirections(source: LatLng, dest: LatLng) {
+        placesNearbyRepository.getDirections(source, dest)
                 .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.computation())
+                .toObservable()
+                .flatMapIterable { it.routes }
+                .firstOrError()
+                .map { decodePoly(it.overviewPolyline.points) }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     d { it.toString() }
-                    if (it.routes.isNotEmpty()) {
-                        view?.addPolyline(decodePoly(it.routes[0].overviewPolyline.points))
-                    }
+                    view?.addPolyline(it)
                 }, ::e)
     }
 
