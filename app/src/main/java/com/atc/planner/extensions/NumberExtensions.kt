@@ -24,4 +24,10 @@ fun Float?.orZero(): Float = this ?: 0.0f
 
 fun Double?.orZero(): Double = this ?: 0.0
 
+fun Long?.orMax(): Long = this ?: Long.MAX_VALUE
+
+fun Float?.orMax(): Float = this ?: Float.MAX_VALUE
+
+fun Double?.orMax(): Double = this ?: Double.MAX_VALUE
+
 fun ClosedRange<Int>.random() = Random().nextInt(endInclusive - start) + start

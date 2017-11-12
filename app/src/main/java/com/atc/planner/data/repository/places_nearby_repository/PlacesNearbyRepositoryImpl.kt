@@ -22,31 +22,49 @@ class PlacesNearbyRepositoryImpl @Inject constructor(private val firebaseDatabas
                                                      private val stringProvider: StringProvider)
     : PlacesNearbyRepository {
 
-    var sightsNearby: List<LocalPlace> = listOf()
-    var lastSightsDownloadTime: DateTime? = null
-    var lastCitySightsWereDownloadedFor: String? = null
-
     var beaconsNearby: List<BeaconPlace> = listOf()
     var lastBeaconsDownloadTime: DateTime? = null
     var lastCityBeaconsWereDownloadedFor: String? = null
 
-    override fun getSightsNearby(latLng: LatLng): Single<List<LocalPlace>> {
+    override fun getSightsNearby(latLng: LatLng, filterDetails: SightsFilterDetails?): Single<List<LocalPlace>> {
         val city = cityProvider.getCity(latLng)
-        // if city is same as before, and last call was recent, return cached response
-        if (lastCitySightsWereDownloadedFor == city
-                && DateTime.now().millis - lastSightsDownloadTime?.millis.orZero() > 1000 * 60 * 5
-                && sightsNearby.isNotEmpty()) {
-            return Single.just(sightsNearby)
-        }
 
         return if (city != null) {
-            firebaseDatabaseDataSource.getPlaces(city)
-                    .doOnSuccess {
-                        sightsNearby = it
-                        lastCitySightsWereDownloadedFor = city
-                        lastSightsDownloadTime = DateTime.now()
-                    }
-                    .doOnError(::e)
+            firebaseDatabaseDataSource.getPlaces(city, filterDetails)
+//                    .toObservable()
+//                    .flatMapIterable { it }
+//                    .map { localPlace ->
+//                        localPlace.targetsChildren = (0..10).random() == 0
+//                        if ((0..3).random() == 0) {
+//                            localPlace.entryFee = (0..20).random().toFloat()
+//                        }
+//                        localPlace.childrenFriendly = (0..3).random() < 3
+//                        firebaseDatabaseDataSource.savePlace(localPlace).subscribe({ d { "updated ${localPlace.name}" } }, ::e)
+//                        localPlace.hasSouvenirs = (0..3).random() == 0
+//                        localPlace.hasView = (0..3).random() == 0
+//
+//                        val placeType = (0..3).random()
+//                        localPlace.isArtGallery = false
+//                        localPlace.isMuseum = false
+//                        localPlace.isOutdoors = false
+//                        localPlace.isPhysicalActivity = false
+//                        when (placeType) {
+//                            0 -> {
+//                                localPlace.isArtGallery = true
+//                                localPlace.isOutdoors = (0..20).random() == 0
+//                            }
+//                            1 -> localPlace.isMuseum = true
+//                            2 -> localPlace.isOutdoors = true
+//                            3 -> {
+//                                localPlace.isPhysicalActivity = true
+//                                localPlace.isOutdoors = (0..1).random() == 0
+//                            }
+//                        }
+//                        localPlace.rating = ((0..100).random().toFloat() / 10f)
+//                        firebaseDatabaseDataSource.savePlace(localPlace).subscribe({ d { "updated ${localPlace.name}" } }, ::e)
+//                        localPlace
+//                    }
+//                    .toList()
         } else {
             Single.error(NoSuchElementException("City for these coordinates was not found"))
         }

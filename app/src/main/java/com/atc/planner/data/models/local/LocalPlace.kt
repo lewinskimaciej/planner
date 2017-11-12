@@ -16,5 +16,15 @@ data class LocalPlace(
         var thumbnailUrl: String? = null,
         var openingHours: String? = null,
         var photos: List<String?>? = null,
-        var source: DataSource? = null
+        var source: DataSource? = null,
+
+        var targetsChildren: Boolean? = false,
+        var childrenFriendly: Boolean? = true,
+        var isMuseum: Boolean? = false,
+        var isArtGallery: Boolean? = false,
+        var isPhysicalActivity: Boolean? = false,
+        var isOutdoors: Boolean? = false,
+        var hasSouvenirs: Boolean? = true,
+        var hasView: Boolean? = false,
+        var entryFee: Float? = 0f
 ) : BaseModel()

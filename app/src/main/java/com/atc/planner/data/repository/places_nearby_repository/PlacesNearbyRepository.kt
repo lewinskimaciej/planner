@@ -7,7 +7,7 @@ import com.google.android.gms.maps.model.LatLng
 import io.reactivex.Single
 
 interface PlacesNearbyRepository {
-    fun getSightsNearby(latLng: LatLng): Single<List<LocalPlace>>
+    fun getSightsNearby(latLng: LatLng, filterDetails: SightsFilterDetails? = null): Single<List<LocalPlace>>
     fun getBeaconsNearby(latLng: LatLng): Single<List<BeaconPlace>>
     fun getDirections(source: LatLng, dest: LatLng): Single<DirectionsResponse>
 }

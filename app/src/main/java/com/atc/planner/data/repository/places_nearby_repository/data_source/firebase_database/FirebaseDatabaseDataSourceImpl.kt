@@ -2,6 +2,8 @@ package com.atc.planner.data.repository.places_nearby_repository.data_source.fir
 
 import com.atc.planner.data.models.local.BeaconPlace
 import com.atc.planner.data.models.local.LocalPlace
+import com.atc.planner.data.repository.places_nearby_repository.SightsFilterDetails
+import com.atc.planner.extensions.orMax
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.Gson
 import io.reactivex.Completable
@@ -19,9 +21,27 @@ class FirebaseDatabaseDataSourceImpl @Inject constructor(private val firebaseFir
                 .addOnFailureListener { emitter.onError(it) }
     }
 
-    override fun getPlaces(city: String): Single<List<LocalPlace>> = Observable.create<LocalPlace> { emitter ->
-        firebaseFirestore.collection("places")
-                .get()
+    override fun getPlaces(city: String, filterDetails: SightsFilterDetails?): Single<List<LocalPlace>> = Observable.create<LocalPlace> { emitter ->
+        val query = firebaseFirestore.collection("places")
+        if (filterDetails != null) {
+            query.whereLessThan("entryFee", filterDetails.maxEntryFee.orMax())
+//                .whereEqualTo("childrenFriendly", filterDetails.childrenFriendly)
+
+            if (filterDetails.canBeAMuseum == false) {
+                query.whereEqualTo("isMuseum", false)
+            }
+            if (filterDetails.canBeAnArtGallery == false) {
+                query.whereEqualTo("isArtGallery", false)
+            }
+            if (filterDetails.canBePhysicalActivity == false) {
+                query.whereEqualTo("isPhysicalActivity", false)
+            }
+            if (filterDetails.canBeOutdoors == false) {
+                query.whereEqualTo("isOutdoors", false)
+            }
+        }
+
+        query.get()
                 .addOnSuccessListener {
                     it.forEach {
                         val json = gson.toJson(it.data)
