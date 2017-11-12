@@ -3,6 +3,7 @@ package com.atc.planner.di.modules
 
 import android.app.Application
 import android.content.Context
+import android.content.SharedPreferences
 import com.atc.planner.App
 import com.atc.planner.BuildConfig
 import com.atc.planner.R
@@ -155,4 +156,11 @@ class CommonModule {
     @Provides
     @Singleton
     fun beaconManager(app: App): BeaconManager = BeaconManager.getInstanceForApplication(app)
+
+    @Provides
+    @Singleton
+    internal fun provideSharedPreferences(application: Application): SharedPreferences {
+        return application.getSharedPreferences(App::class.java.simpleName, Context.MODE_PRIVATE)
+    }
+
 }

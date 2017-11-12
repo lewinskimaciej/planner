@@ -31,7 +31,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".presentation.place_details.PlaceDetailsActivity"
             android:launchMode="singleTop"
@@ -39,6 +38,15 @@
             android:theme="@style/AppTheme" />
 
         <service android:name=".data.service.SearchService" />
+
+        <activity
+            android:name=".presentation.settings.SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".presentation.main.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.atc.planner.presentation.main.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

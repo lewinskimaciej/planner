@@ -2,11 +2,14 @@ package com.atc.planner.presentation.main
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.view.Menu
+import android.view.MenuItem
 import com.atc.planner.R
 import com.atc.planner.data.models.local.LocalPlace
 import com.atc.planner.presentation.base.BaseMvpActivity
 import com.atc.planner.presentation.map.MapFragment
 import com.atc.planner.presentation.map.MapView
+import com.atc.planner.presentation.settings.SettingsActivity
 import com.github.ajalt.timberkt.e
 import com.google.android.gms.maps.model.LatLng
 import com.tbruyelle.rxpermissions2.RxPermissions
@@ -36,6 +39,26 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), MainView {
                 .replace(R.id.main_fragment_container, mapFragment)
                 .commitAllowingStateLoss()
     }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.settings -> {
+            goToSettings()
+            true
+        }
+        else -> true
+    }
+
+    private fun goToSettings() {
+        SettingsActivity.start(this)
+    }
+
+
 
     override fun onDestroy() {
         super.onDestroy()
