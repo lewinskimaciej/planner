@@ -105,6 +105,8 @@ dependencies {
 
     implementation 'org.altbeacon:android-beacon-library:2.12.3'
 
+    implementation 'com.github.BlacKCaT27:CurrencyEditText:2.0.2'
+
     configurations.all {
         resolutionStrategy {
             force 'org.objenesis:objenesis:2.2'

@@ -70,12 +70,7 @@ class SettingsActivity : BaseMvpActivity<SettingsView, SettingsPresenter>(), Set
         max_entry_fee_edit_text.textChanges()
                 .skipInitialValue()
                 .map {
-                    val text = it.toString()
-                    if (text.isEmpty()) {
-                        0f
-                    } else {
-                        text.toFloat()
-                    }
+                    max_entry_fee_edit_text.rawValue.toFloat() / 100
                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ presenter?.onMaxEntryFeeChanges(it) }, ::e)
@@ -86,6 +81,6 @@ class SettingsActivity : BaseMvpActivity<SettingsView, SettingsPresenter>(), Set
         museums_checkbox.isChecked = filterDetails?.canBeAMuseum.orFalse()
         art_galleries_checkbox.isChecked = filterDetails?.canBeAnArtGallery.orFalse()
         physical_activity_checkbox.isChecked = filterDetails?.canBePhysicalActivity.orFalse()
-        max_entry_fee_edit_text.setText(String.format("%.2f", filterDetails?.maxEntryFee.orZero()))
+        max_entry_fee_edit_text.setValue(filterDetails?.maxEntryFee.orZero().toLong() * 100)
     }
 }

@@ -10,4 +10,4 @@ data class SightsFilterDetails(var targetsChildren: Boolean? = false,
                                var canBeOutdoors: Boolean? = true,
                                var hasSouvenirs: Boolean? = true,
                                var hasView: Boolean? = true,
-                               var maxEntryFee: Float? = Float.MAX_VALUE) : BaseModel()
+                               var maxEntryFee: Float? = 20f) : BaseModel()
