@@ -2,6 +2,7 @@ package com.atc.planner.extensions
 
 import android.content.res.Resources
 import android.util.TypedValue
+import java.util.*
 
 fun Int.dpToPx() = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, this.toFloat(), Resources.getSystem().displayMetrics)
 
@@ -22,3 +23,5 @@ fun Long?.orZero(): Long = this ?: 0
 fun Float?.orZero(): Float = this ?: 0.0f
 
 fun Double?.orZero(): Double = this ?: 0.0
+
+fun ClosedRange<Int>.random() = Random().nextInt(endInclusive - start) + start
