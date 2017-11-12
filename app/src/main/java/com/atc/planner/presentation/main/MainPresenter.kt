@@ -5,7 +5,6 @@ import com.atc.planner.commons.LocationProvider
 import com.atc.planner.commons.StringProvider
 import com.atc.planner.data.repository.places_nearby_repository.PlacesNearbyRepository
 import com.atc.planner.di.scopes.ActivityScope
-import com.atc.planner.extensions.asLatLng
 import com.atc.planner.extensions.asLatLong
 import com.atc.planner.presentation.base.BaseMvpPresenter
 import com.github.ajalt.timberkt.d
@@ -40,7 +39,6 @@ class MainPresenter @Inject constructor(private val stringProvider: StringProvid
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe({
                             view?.setItems(it)
-                            getDirections(currentLocation.asLatLong().asLatLng(), it[0].location.asLatLng())
                         }, ::e)
             }
         }, {
