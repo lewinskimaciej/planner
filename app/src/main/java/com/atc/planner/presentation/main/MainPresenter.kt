@@ -26,6 +26,7 @@ class MainPresenter @Inject constructor(private val stringProvider: StringProvid
 
     private var currentLocation: LatLng? = null
     private var lastRefreshDate: Long? = null
+    private var count: Int = 0
 
     override fun onViewCreated(data: Serializable?) {
         view?.askForLocationPermission()
@@ -37,6 +38,13 @@ class MainPresenter @Inject constructor(private val stringProvider: StringProvid
             currentLocation = it?.asLatLong()
 
             getPlacesNearby()
+//            if (count == 0) {
+//                count++
+//                currentLocation?.let {
+//                    placesNearbyRepository.getPlacesFromSygic(it)
+//                            .subscribe({ d { "got all places: ${it.size}" } }, ::e)
+//                }
+//            }
         }, {
             e(it)
         })
@@ -48,13 +56,22 @@ class MainPresenter @Inject constructor(private val stringProvider: StringProvid
             currentLocation?.let {
                 val filterDetails = userDetailsRepository.getFilterDetails()
 
+                d { "getSightsNearby" }
                 placesNearbyRepository.getSightsNearby(it, filterDetails)
                         .subscribeOn(Schedulers.io())
                         .observeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe({
+                            d { "got ${it.size} items" }
                             view?.setItems(it)
-                        }, ::e)
+                        }, {
+                            if (it is NoSuchElementException) {
+                                view?.showAlertDialog(stringProvider.getString(R.string.geocoder_encountered_a_problem),
+                                        stringProvider.getString(R.string.try_rebooting_your_device))
+                            } else {
+                                view?.showErrorToast()
+                            }
+                        })
 
                 lastRefreshDate = System.currentTimeMillis()
             }
@@ -126,6 +143,6 @@ class MainPresenter @Inject constructor(private val stringProvider: StringProvid
     }
 
     fun requestRefresh() {
-        getPlacesNearby()
+//        getPlacesNearby()
     }
 }

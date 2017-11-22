@@ -141,13 +141,9 @@ class SearchService : DaggerService(), LocationListener, BeaconConsumer {
         val latLong = p0?.asLatLong()
         if (latLong != null) {
             if (sightsNearby.isEmpty()) {
-                placesNearbyRepository.getSightsNearby(latLong)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({
-                            sightsNearby = it
-                            checkIfCloseToPlaceByLocation(latLong)
-                        }, ::e)
+                d { "getSightsNearby" }
+                sightsNearby = placesNearbyRepository.getLocallySavedSightsNearby()
+                checkIfCloseToPlaceByLocation(latLong)
             } else {
                 checkIfCloseToPlaceByLocation(latLong)
             }
@@ -162,18 +158,20 @@ class SearchService : DaggerService(), LocationListener, BeaconConsumer {
     }
 
     private fun checkIfCloseToPlaceByLocation(latLong: LatLng) {
-        Observable.fromIterable(sightsNearby)
-                .subscribeOn(Schedulers.computation())
-                .filter { latLong.distanceTo(it.location.asLatLng()) <= MIN_METERS_TO_PLACE }
-                .filter {
-                    val place: LocalPlace = it
-                    placesWithNotificationShown.firstOrNull { it.remoteId == place.remoteId } == null
-                }
-                .toList()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    handleNotification(it)
-                }, ::e)
+        if (sightsNearby.isNotEmpty()) {
+            Observable.fromIterable(sightsNearby)
+                    .subscribeOn(Schedulers.computation())
+                    .filter { latLong.distanceTo(it.location.asLatLng()) <= MIN_METERS_TO_PLACE }
+                    .filter {
+                        val place: LocalPlace = it
+                        placesWithNotificationShown.firstOrNull { it.remoteId == place.remoteId } == null
+                    }
+                    .toList()
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({
+                        handleNotification(it)
+                    }, ::e)
+        }
     }
 
     private fun showNotificationForBeacon(matchedBeacon: BeaconPlace) {

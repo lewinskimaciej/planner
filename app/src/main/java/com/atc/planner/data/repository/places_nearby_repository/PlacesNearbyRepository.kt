@@ -10,4 +10,6 @@ interface PlacesNearbyRepository {
     fun getSightsNearby(latLng: LatLng, filterDetails: SightsFilterDetails? = null): Single<List<LocalPlace>>
     fun getBeaconsNearby(latLng: LatLng): Single<List<BeaconPlace>>
     fun getDirections(source: LatLng, dest: LatLng): Single<DirectionsResponse>
+    fun getPlacesFromSygic(latLng: LatLng): Single<List<LocalPlace>>
+    fun getLocallySavedSightsNearby(): List<LocalPlace>
 }

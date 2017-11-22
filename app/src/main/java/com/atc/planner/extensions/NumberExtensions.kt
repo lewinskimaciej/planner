@@ -30,4 +30,4 @@ fun Float?.orMax(): Float = this ?: Float.MAX_VALUE
 
 fun Double?.orMax(): Double = this ?: Double.MAX_VALUE
 
-fun ClosedRange<Int>.random() = Random().nextInt(endInclusive + 1 - start) + start
+fun ClosedRange<Int>.random() = Random().nextInt(endInclusive - start) + start

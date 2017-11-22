@@ -9,8 +9,6 @@ import com.atc.planner.data.models.local.LocalPlace
 import com.atc.planner.di.scopes.FragmentScope
 import com.atc.planner.extensions.asLatLng
 import com.atc.planner.extensions.asLatLong
-import com.atc.planner.extensions.dpToPx
-import com.atc.planner.extensions.resize
 import com.atc.planner.presentation.base.BaseMvpPresenter
 import com.atc.planner.presentation.place_details.PlaceDetailsBundle
 import com.github.ajalt.timberkt.Timber.e
@@ -109,7 +107,7 @@ class MapPresenter @Inject constructor(private val stringProvider: StringProvide
                     place.location?.asLatLng()?.let { placeLocation ->
                         markerOptions.position(placeLocation)
                         bitmapProvider.getRoundedBitmap(place.thumbnailUrl, R.drawable.error_marker, {
-                            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(it?.resize(32.dpToPx().toInt(), 32.dpToPx().toInt())))
+                            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(it))
                             emitter.onNext(Pair(markerOptions, place))
 
                             counter++
@@ -117,7 +115,7 @@ class MapPresenter @Inject constructor(private val stringProvider: StringProvide
                                 emitter.onComplete()
                             }
                         }, {
-                            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(it.resize(32.dpToPx().toInt(), 32.dpToPx().toInt())))
+                            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(it))
                             emitter.onNext(Pair(markerOptions, place))
 
                             counter++

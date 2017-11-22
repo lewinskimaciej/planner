@@ -15,12 +15,14 @@ fun ImageView.loadImage(url: String?, bitmapTransformation: BitmapTransformation
                     .asBitmap()
                     .transform(bitmapTransformation)
                     .load(url)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .skipMemoryCache(true)
+                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                     .into(this)
         } else {
             GlideApp.with(this.context)
                     .load(url)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .skipMemoryCache(true)
+                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                     .into(this)
         }
     }
@@ -32,7 +34,7 @@ fun ImageView.loadImage(url: String?, @IdRes error: Int?) {
             GlideApp.with(this.context)
                     .load(url)
                     .error(error)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                     .into(this)
         }
     }
@@ -42,7 +44,7 @@ fun ImageView.loadImage(file: File?) {
     file?.let {
         GlideApp.with(this.context)
                 .load(file)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                 .into(this)
     }
 }
@@ -52,7 +54,7 @@ fun ImageView.loadImage(file: File?, @IdRes error: Int?) {
         if (error != null) {
             GlideApp.with(this.context)
                     .load(file)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                     .error(error)
                     .into(this)
         }
@@ -63,7 +65,7 @@ fun ImageView.loadImage(uri: Uri?) {
     uri?.let {
         GlideApp.with(this.context)
                 .load(uri)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                 .into(this)
     }
 }
@@ -73,7 +75,7 @@ fun ImageView.loadImage(@IdRes drawable: Int?, @IdRes error: Int?) {
         if (error != null) {
             GlideApp.with(this.context)
                     .load(drawable)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                     .error(error)
                     .into(this)
         }
@@ -84,7 +86,7 @@ fun ImageView.loadImage(@IdRes drawable: Int?) {
     drawable?.let {
         GlideApp.with(this.context)
                 .load(drawable)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                 .into(this)
     }
 }
