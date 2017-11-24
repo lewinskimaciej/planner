@@ -51,10 +51,15 @@ class FirebaseDatabaseDataSourceImpl @Inject constructor(private val firebaseFir
                     e(it)
                     emitter.onError(it)
                 }
-    }
-            .filter {
-                it.entryFee.orZero() <= filterDetails?.maxEntryFee.orZero()
-            }.filter {
+    }.filter {
+        if (it.targetsChildren == true) {
+            filterDetails?.targetsChildren == true
+        } else {
+            true
+        }
+    }.filter {
+        it.entryFee.orZero() <= filterDetails?.maxEntryFee.orZero()
+    }.filter {
         !((filterDetails?.canBeAMuseum == false && it.isMuseum == true)
                 || (filterDetails?.canBeAnArtGallery == false && it.isArtGallery == true)
                 || (filterDetails?.canBePhysicalActivity == false && it.isPhysicalActivity == true)

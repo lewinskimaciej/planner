@@ -4,8 +4,10 @@ import com.atc.planner.R
 import com.atc.planner.commons.LocationProvider
 import com.atc.planner.commons.StringProvider
 import com.atc.planner.data.repository.places_nearby_repository.PlacesNearbyRepository
+import com.atc.planner.data.repository.places_nearby_repository.SightsFilterDetails
 import com.atc.planner.data.repository.user_details_repository.UserDetailsRepository
 import com.atc.planner.di.scopes.ActivityScope
+import com.atc.planner.extensions.asLatLng
 import com.atc.planner.extensions.asLatLong
 import com.atc.planner.extensions.orZero
 import com.atc.planner.presentation.base.BaseMvpPresenter
@@ -53,17 +55,18 @@ class MainPresenter @Inject constructor(private val stringProvider: StringProvid
 
     private fun getPlacesNearby() {
         if (lastRefreshDate == null || System.currentTimeMillis() - lastRefreshDate.orZero() > 2000) {
-            currentLocation?.let {
+            currentLocation?.let { location ->
                 val filterDetails = userDetailsRepository.getFilterDetails()
 
                 d { "getSightsNearby" }
-                placesNearbyRepository.getSightsNearby(it, filterDetails)
+                placesNearbyRepository.getSightsNearby(location, filterDetails)
                         .subscribeOn(Schedulers.io())
                         .observeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe({
                             d { "got ${it.size} items" }
                             view?.setItems(it)
+                            getDirections(location, filterDetails)
                         }, {
                             if (it is NoSuchElementException) {
                                 view?.showAlertDialog(stringProvider.getString(R.string.geocoder_encountered_a_problem),
@@ -78,20 +81,44 @@ class MainPresenter @Inject constructor(private val stringProvider: StringProvid
         }
     }
 
-    private fun getDirections(source: LatLng, dest: LatLng) {
-        placesNearbyRepository.getDirections(source, dest)
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.computation())
+    private fun getDirections(currentLocation: LatLng, filterDetails: SightsFilterDetails?) {
+        placesNearbyRepository.getRoad(currentLocation, filterDetails)
+                .subscribeOn(Schedulers.computation())
+                .map {
+                    it.removeAll { it == null }
+                    it
+                }
                 .toObservable()
-                .flatMapIterable { it.routes }
-                .firstOrError()
-                .map { decodePoly(it.overviewPolyline.points) }
+                .flatMapIterable { it }
+                .doOnNext { d { "FOUND: ${it.name}" } }
+                .toList()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    d { it.toString() }
-                    view?.addPolyline(it)
+                .subscribe({ locations ->
+                    d { "onSuccess " }
+                    val pairs: ArrayList<Pair<LatLng, LatLng>> = arrayListOf()
+                    for (i in 0..(locations.size - 2)) {
+                        pairs.add(Pair(locations[i]?.location.asLatLng(), locations[i + 1]?.location.asLatLng()))
+                    }
+
+                    pairs.forEach {
+                        d { "getting polyline for $it" }
+                        placesNearbyRepository.getDirections(it.first, it.second)
+                                .subscribeOn(Schedulers.io())
+                                .map { it.routes.first() }
+                                .map { decodePoly(it.overviewPolyline.points) }
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe({
+                                    view?.addPolyline(it)
+                                    d { "addedPolyline" }
+                                }, ::e)
+                    }
                 }, ::e)
     }
+/*
+   placesNearbyRepository.getDirections(it[0]?.location.asLatLng(), it[1]?.location.asLatLng()).toObservable()
+                .map { it.routes.first() }
+                .map { decodePoly(it.overviewPolyline.points) }
+ */
 
     fun onPermissionsRefused() {
         d { "onPermissionsRefused" }

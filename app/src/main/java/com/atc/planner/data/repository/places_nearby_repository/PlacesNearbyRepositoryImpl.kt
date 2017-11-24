@@ -12,9 +12,7 @@ import com.atc.planner.data.models.remote.sygic_api.asCategory
 import com.atc.planner.data.remote_services.DirectionsRemoteService
 import com.atc.planner.data.repository.places_nearby_repository.data_source.firebase_database.FirebaseDatabaseDataSource
 import com.atc.planner.data.repository.places_nearby_repository.data_source.sygic_api.SygicApiDataSource
-import com.atc.planner.extensions.asLatLong
-import com.atc.planner.extensions.orZero
-import com.atc.planner.extensions.random
+import com.atc.planner.extensions.*
 import com.github.ajalt.timberkt.d
 import com.github.ajalt.timberkt.e
 import com.google.android.gms.maps.model.LatLng
@@ -194,4 +192,75 @@ class PlacesNearbyRepositoryImpl @Inject constructor(private val firebaseDatabas
                     "${dest.latitude},${dest.longitude}",
                     stringProvider.getString(R.string.places_api_key))
 
+    override fun getRoad(currentLocation: LatLng, filterDetails: SightsFilterDetails?): Single<ArrayList<LocalPlace?>> = Single.create { emitter ->
+        val placesToChooseFrom = ArrayList(places)
+        val chosenPlaces: ArrayList<LocalPlace?> = arrayListOf()
+
+        var highestRatedPlace: LocalPlace? = null  // point of origin
+        var highestRatedPlaceWeight = 0f
+        for (place in places) {
+            val placeWeight = place.attractiveness(currentLocation, filterDetails, true)
+            if (placeWeight > highestRatedPlaceWeight) {
+                highestRatedPlace = place
+                highestRatedPlaceWeight = placeWeight
+            }
+        }
+        chosenPlaces.add(highestRatedPlace)
+        placesToChooseFrom.remove(highestRatedPlace)
+        var lastBestPlace = highestRatedPlace
+        for (count in 0..5) {
+            val tempPlace = lastBestPlace?.getHighestRatedClosePlace(filterDetails, placesToChooseFrom)
+            lastBestPlace = tempPlace
+            if (tempPlace != null) {
+                chosenPlaces.add(tempPlace)
+                placesToChooseFrom.remove(tempPlace)
+                d { "CHOSE place #$count: ${tempPlace.name}" }
+            }
+        }
+
+        emitter.onSuccess(chosenPlaces)
+    }
+
+    private fun LocalPlace.getHighestRatedClosePlace(filterDetails: SightsFilterDetails?, placesToChooseFrom: ArrayList<LocalPlace>): LocalPlace? {
+        var highestRatedPlace: LocalPlace? = null  // point of origin
+        var highestRatedPlaceWeight = 0f
+        for (place in placesToChooseFrom) {
+            val placeWeight = place.attractiveness(this.location.asLatLng(), filterDetails, true)
+            if (placeWeight > highestRatedPlaceWeight) {
+                highestRatedPlace = place
+                highestRatedPlaceWeight = placeWeight
+            }
+        }
+        return highestRatedPlace
+    }
+
+    private fun LocalPlace.attractiveness(currentLocation: LatLng, filterDetails: SightsFilterDetails?, countClosest: Boolean): Float {
+        var attractiveness: Float = this.rating * 2
+
+        if (filterDetails?.hasSouvenirs == true) {
+            attractiveness += 1
+        }
+        if (filterDetails?.childrenFriendly == true) {
+            attractiveness += 1
+        }
+        val distance = currentLocation.asLocation().distanceTo(this.location.asLatLng().asLocation())
+        if (countClosest) {
+            this.getClosestPlaces(3).forEach { attractiveness += it.attractiveness(this.location.asLatLng(), filterDetails, false) }
+        }
+        d { "${this.name} -> attractiveness: $attractiveness, distance: $distance" }
+
+//        if (attractiveness - distance <= 0) {
+//            attractiveness = 1f
+//        } else {
+//            attractiveness -= distance
+//        }
+
+        return attractiveness
+    }
+
+    private fun LocalPlace.getClosestPlaces(amount: Int)
+            : List<LocalPlace> = places.map { Pair(it.location.asLatLng().asLocation().distanceTo(location.asLatLng().asLocation()), it) }
+            .sortedBy { it.first }
+            .take(amount)
+            .map { it.second }
 }

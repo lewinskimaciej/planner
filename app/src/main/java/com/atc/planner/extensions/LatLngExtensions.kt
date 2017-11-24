@@ -31,6 +31,13 @@ fun LatLong?.asLatLng(): LatLng = LatLng(this?.lat.orZero(), this?.long.orZero()
 
 fun LatLng?.asLatLong(): LatLong = LatLong(this?.latitude, this?.longitude)
 
+fun LatLng?.asLocation(): android.location.Location {
+    val location = android.location.Location("${this?.latitude},${this?.longitude}")
+    location.latitude = this?.latitude.orZero()
+    location.longitude = this?.longitude.orZero()
+    return location
+}
+
 fun LatLng.distanceTo(other: LatLng): Float = LatLong(this.latitude, this.longitude).distanceTo(LatLong(other.latitude, other.longitude))
 
 fun LatLong.distanceTo(other: LatLong): Float {
