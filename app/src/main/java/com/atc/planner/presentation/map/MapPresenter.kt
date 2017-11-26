@@ -18,6 +18,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import java.io.Serializable
 import javax.inject.Inject
 
@@ -125,7 +126,8 @@ class MapPresenter @Inject constructor(private val stringProvider: StringProvide
                         })
                     }
                 }
-            }.subscribeOn(AndroidSchedulers.mainThread())
+            }.subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({ (markerOptions, place) ->
                         view?.addMarker(markerOptions, place)
                     }, ::e, {

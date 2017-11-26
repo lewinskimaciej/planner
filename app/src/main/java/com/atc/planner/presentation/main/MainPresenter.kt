@@ -40,13 +40,7 @@ class MainPresenter @Inject constructor(private val stringProvider: StringProvid
             currentLocation = it?.asLatLong()
 
             getPlacesNearby()
-//            if (count == 0) {
-//                count++
-//                currentLocation?.let {
-//                    placesNearbyRepository.getPlacesFromSygic(it)
-//                            .subscribe({ d { "got all places: ${it.size}" } }, ::e)
-//                }
-//            }
+
         }, {
             e(it)
         })
@@ -92,26 +86,29 @@ class MainPresenter @Inject constructor(private val stringProvider: StringProvid
                 .flatMapIterable { it }
                 .doOnNext { d { "FOUND: ${it.name}" } }
                 .toList()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ locations ->
-                    d { "onSuccess " }
+                .map { locations ->
                     val pairs: ArrayList<Pair<LatLng, LatLng>> = arrayListOf()
                     for (i in 0..(locations.size - 2)) {
                         pairs.add(Pair(locations[i]?.location.asLatLng(), locations[i + 1]?.location.asLatLng()))
                     }
-
-                    pairs.forEach {
-                        d { "getting polyline for $it" }
-                        placesNearbyRepository.getDirections(it.first, it.second)
-                                .subscribeOn(Schedulers.io())
-                                .map { it.routes.first() }
-                                .map { decodePoly(it.overviewPolyline.points) }
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe({
-                                    view?.addPolyline(it)
-                                    d { "addedPolyline" }
-                                }, ::e)
-                    }
+                    pairs
+                }
+                .toObservable()
+                .flatMapIterable { it }
+                .observeOn(Schedulers.io())
+                .flatMap {
+                    d { "getting polyline for $it" }
+                    placesNearbyRepository.getDirections(it.first, it.second)
+                            .subscribeOn(Schedulers.io())
+                            .map { it.routes.first() }
+                            .map { decodePoly(it.overviewPolyline.points) }
+                            .toObservable()
+                }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    d { "onSuccess " }
+                    view?.addPolyline(it)
+                    d { "addedPolyline" }
                 }, ::e)
     }
 /*
