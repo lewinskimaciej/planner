@@ -264,10 +264,12 @@ class PlacesNearbyRepositoryImpl @Inject constructor(private val firebaseDatabas
 
     private fun List<Place>?.maximumDistanceFrom(place: Place): Float {
         var highestDistance = 0f
-        this?.forEach {
-            val distance = place.location?.asLatLng().asLocation().distanceTo(it.location?.asLatLng().asLocation())
-            if (distance > highestDistance) {
-                highestDistance = distance
+        if (this != null) {
+            for (index in this.indices) {
+                val distance = place.location?.asLatLng().asLocation().distanceTo(this[index].location?.asLatLng().asLocation())
+                if (distance > highestDistance) {
+                    highestDistance = distance
+                }
             }
         }
         return highestDistance
