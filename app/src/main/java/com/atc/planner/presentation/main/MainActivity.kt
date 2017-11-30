@@ -95,4 +95,8 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), MainView {
     override fun addPolyline(polyline: List<LatLng>) {
         (mapFragment as? MapView)?.drawPolyline(polyline)
     }
+
+    override fun highlightMarker(place: Place?) {
+        (mapFragment as? MapView)?.highlightMarker(place)
+    }
 }

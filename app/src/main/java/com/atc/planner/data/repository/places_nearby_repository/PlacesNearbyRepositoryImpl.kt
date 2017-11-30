@@ -210,7 +210,7 @@ class PlacesNearbyRepositoryImpl @Inject constructor(private val firebaseDatabas
         chosenPlaces.add(closesPlace)
         placesToChooseFrom.remove(closesPlace)
         var lastBestPlace = closesPlace
-        for (count in 0..5) {
+        for (count in 0..10) {
             d { "getRoute choosing $count" }
             val tempPlace = lastBestPlace?.getHighestRatedClosePlace(filterDetails, placesToChooseFrom)
             lastBestPlace = tempPlace
