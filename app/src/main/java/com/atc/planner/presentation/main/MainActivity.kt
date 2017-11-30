@@ -5,7 +5,7 @@ import android.support.v4.app.Fragment
 import android.view.Menu
 import android.view.MenuItem
 import com.atc.planner.R
-import com.atc.planner.data.models.local.LocalPlace
+import com.atc.planner.data.models.local.Place
 import com.atc.planner.presentation.base.BaseMvpActivity
 import com.atc.planner.presentation.map.MapFragment
 import com.atc.planner.presentation.map.MapView
@@ -82,12 +82,12 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), MainView {
                 }, ::e)
     }
 
-    override fun setItems(items: List<LocalPlace>) {
+    override fun setItems(items: List<Place>) {
         // set markers on map
         (mapFragment as? MapView)?.setData(items)
     }
 
-    override fun addItems(items: List<LocalPlace>) {
+    override fun addItems(items: List<Place>) {
         // add markers to map
         (mapFragment as? MapView)?.addData(items)
     }

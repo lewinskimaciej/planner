@@ -1,7 +1,7 @@
 package com.atc.planner.data.repository.places_nearby_repository.data_source.firebase_database
 
-import com.atc.planner.data.models.local.BeaconPlace
-import com.atc.planner.data.models.local.LocalPlace
+import com.atc.planner.data.models.local.Beacon
+import com.atc.planner.data.models.local.Place
 import com.atc.planner.data.repository.places_nearby_repository.SightsFilterDetails
 import com.atc.planner.extensions.orZero
 import com.github.ajalt.timberkt.d
@@ -16,17 +16,17 @@ import javax.inject.Inject
 class FirebaseDatabaseDataSourceImpl @Inject constructor(private val firebaseFirestore: FirebaseFirestore,
                                                          private val gson: Gson)
     : FirebaseDatabaseDataSource {
-    override fun savePlace(localPlace: LocalPlace): Completable = Completable.create { emitter ->
+    override fun savePlace(place: Place): Completable = Completable.create { emitter ->
         firebaseFirestore.collection("places")
-                .add(localPlace)
+                .add(place)
                 .addOnSuccessListener { emitter.onComplete() }
                 .addOnFailureListener { emitter.onError(it) }
     }
 
-    override fun removePlace(localPlace: LocalPlace): Completable {
+    override fun removePlace(place: Place): Completable {
         return Completable.create { emitter ->
             firebaseFirestore.collection("places")
-                    .document(localPlace.remoteId.orEmpty())
+                    .document(place.remoteId.orEmpty())
                     .delete()
                     .addOnSuccessListener { emitter.onComplete() }
                     .addOnFailureListener { emitter.onError(it) }
@@ -34,14 +34,14 @@ class FirebaseDatabaseDataSourceImpl @Inject constructor(private val firebaseFir
         }
     }
 
-    override fun getPlaces(city: String, filterDetails: SightsFilterDetails?): Single<List<LocalPlace>> = Observable.create<LocalPlace> { emitter ->
+    override fun getPlaces(city: String, filterDetails: SightsFilterDetails?): Single<List<Place>> = Observable.create<Place> { emitter ->
         d { "getPlaces" }
         firebaseFirestore.collection("places")
                 .get()
                 .addOnSuccessListener {
                     d { "getPlaces onSuccess" }
                     it.forEach {
-                        val place = gson.fromJson<LocalPlace>(gson.toJson(it.data), LocalPlace::class.java)
+                        val place = gson.fromJson<Place>(gson.toJson(it.data), Place::class.java)
                         emitter.onNext(place)
                         d { "parsed ${place.remoteId}" }
                     }
@@ -67,13 +67,13 @@ class FirebaseDatabaseDataSourceImpl @Inject constructor(private val firebaseFir
     }
             .toList()
 
-    override fun getBeaconsNearby(city: String): Single<List<BeaconPlace>> = Observable.create<BeaconPlace> { emitter ->
+    override fun getBeaconsNearby(city: String): Single<List<Beacon>> = Observable.create<Beacon> { emitter ->
         firebaseFirestore.collection("beacons")
                 .get()
                 .addOnSuccessListener {
                     it.forEach {
                         val json = gson.toJson(it.data)
-                        val place = gson.fromJson<BeaconPlace>(json, BeaconPlace::class.java)
+                        val place = gson.fromJson<Beacon>(json, Beacon::class.java)
                         emitter.onNext(place)
                     }
                     emitter.onComplete()

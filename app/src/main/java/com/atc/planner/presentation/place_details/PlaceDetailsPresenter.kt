@@ -15,7 +15,7 @@ class PlaceDetailsPresenter @Inject constructor() : BaseMvpPresenter<PlaceDetail
             placeDetailsBundle = data as? PlaceDetailsBundle
         }
 
-        view?.setUpPlaceDetails(placeDetailsBundle?.localPlace)
+        view?.setUpPlaceDetails(placeDetailsBundle?.place)
     }
 
     override fun onNewBundle(data: Serializable?) {

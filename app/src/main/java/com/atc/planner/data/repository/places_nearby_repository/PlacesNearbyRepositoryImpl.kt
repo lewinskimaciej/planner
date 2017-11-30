@@ -3,9 +3,9 @@ package com.atc.planner.data.repository.places_nearby_repository
 import com.atc.planner.R
 import com.atc.planner.commons.CityProvider
 import com.atc.planner.commons.StringProvider
-import com.atc.planner.data.models.local.BeaconPlace
+import com.atc.planner.data.models.local.Beacon
 import com.atc.planner.data.models.local.DataSource
-import com.atc.planner.data.models.local.LocalPlace
+import com.atc.planner.data.models.local.Place
 import com.atc.planner.data.models.local.asPlaceType
 import com.atc.planner.data.models.remote.sygic_api.Category
 import com.atc.planner.data.models.remote.sygic_api.asCategory
@@ -29,15 +29,15 @@ class PlacesNearbyRepositoryImpl @Inject constructor(private val firebaseDatabas
                                                      private val stringProvider: StringProvider)
     : PlacesNearbyRepository {
 
-    private var places: List<LocalPlace> = listOf()
+    private var places: List<Place> = listOf()
 
-    private var beaconsNearby: List<BeaconPlace> = listOf()
+    private var beaconsNearby: List<Beacon> = listOf()
     private var lastBeaconsDownloadTime: DateTime? = null
     private var lastCityBeaconsWereDownloadedFor: String? = null
 
-    override fun getLocallySavedSightsNearby(): List<LocalPlace> = places
+    override fun getLocallySavedSightsNearby(): List<Place> = places
 
-    override fun getSightsNearby(latLng: LatLng, filterDetails: SightsFilterDetails?): Single<List<LocalPlace>> {
+    override fun getSightsNearby(latLng: LatLng, filterDetails: SightsFilterDetails?): Single<List<Place>> {
         val city = cityProvider.getCity(latLng)
 
         return if (city != null) {
@@ -48,37 +48,37 @@ class PlacesNearbyRepositoryImpl @Inject constructor(private val firebaseDatabas
                     }
 //                    .toObservable()
 //                    .flatMapIterable { it }
-//                    .map { localPlace ->
-//                        val originalPlace = localPlace.copy()
-//                        localPlace.targetsChildren = (0..10).random() == 0
+//                    .map { place ->
+//                        val originalPlace = place.copy()
+//                        place.targetsChildren = (0..10).random() == 0
 //                        if ((0..3).random() == 0) {
-//                            localPlace.entryFee = (0..21).random().toFloat()
+//                            place.entryFee = (0..21).random().toFloat()
 //                        }
-//                        localPlace.childrenFriendly = (0..3).random() < 3
-//                        localPlace.hasSouvenirs = (0..3).random() == 0
-//                        localPlace.hasView = (0..3).random() == 0
+//                        place.childrenFriendly = (0..3).random() < 3
+//                        place.hasSouvenirs = (0..3).random() == 0
+//                        place.hasView = (0..3).random() == 0
 //
 //                        val placeType = (0..4).random()
-//                        localPlace.isArtGallery = false
-//                        localPlace.isMuseum = false
-//                        localPlace.isOutdoors = false
-//                        localPlace.isPhysicalActivity = false
+//                        place.isArtGallery = false
+//                        place.isMuseum = false
+//                        place.isOutdoors = false
+//                        place.isPhysicalActivity = false
 //                        when (placeType) {
 //                            0 -> {
-//                                localPlace.isArtGallery = true
-//                                localPlace.isOutdoors = (0..20).random() == 0
+//                                place.isArtGallery = true
+//                                place.isOutdoors = (0..20).random() == 0
 //                            }
-//                            1 -> localPlace.isMuseum = true
-//                            2 -> localPlace.isOutdoors = true
+//                            1 -> place.isMuseum = true
+//                            2 -> place.isOutdoors = true
 //                            3 -> {
-//                                localPlace.isPhysicalActivity = true
-//                                localPlace.isOutdoors = (0..1).random() == 0
+//                                place.isPhysicalActivity = true
+//                                place.isOutdoors = (0..1).random() == 0
 //                            }
 //                        }
-//                        localPlace.rating = ((0..100).random().toFloat() / 10f)
-//                        firebaseDatabaseDataSource.savePlace(localPlace).subscribe({ d { "saved ${localPlace.name}" } }, ::e)
+//                        place.rating = ((0..100).random().toFloat() / 10f)
+//                        firebaseDatabaseDataSource.savePlace(place).subscribe({ d { "saved ${place.name}" } }, ::e)
 //
-//                        localPlace
+//                        place
 //                    }
 //                    .toList()
 //                    .doOnSuccess { d { "size AFTER: ${it.size}" } }
@@ -87,7 +87,7 @@ class PlacesNearbyRepositoryImpl @Inject constructor(private val firebaseDatabas
         }
     }
 
-    override fun getPlacesFromSygic(latLng: LatLng): Single<List<LocalPlace>> {
+    override fun getPlacesFromSygic(latLng: LatLng): Single<List<Place>> {
         return sygicApiDataSource.getPlaces(latLng, 10000, listOf(Category.SIGHTSEEING, Category.EATING, Category.DISCOVERING))
                 .toObservable()
                 .flatMapIterable { it }
@@ -114,7 +114,7 @@ class PlacesNearbyRepositoryImpl @Inject constructor(private val firebaseDatabas
                             .filter { "photo" == it.type }
                             .map { it.url }
 
-                    val localPlace = LocalPlace(it.id,
+                    val localPlace = Place(it.id,
                             it.level,
                             "Wrocław",
                             it.categories?.map { it.asCategory().asPlaceType() },
@@ -165,7 +165,7 @@ class PlacesNearbyRepositoryImpl @Inject constructor(private val firebaseDatabas
                 .toList()
     }
 
-    override fun getBeaconsNearby(latLng: LatLng): Single<List<BeaconPlace>> {
+    override fun getBeaconsNearby(latLng: LatLng): Single<List<Beacon>> {
         val city = cityProvider.getCity(latLng)
         // if city is same as before, and last call was recent, return cached response
         if (lastCityBeaconsWereDownloadedFor == city
@@ -192,11 +192,11 @@ class PlacesNearbyRepositoryImpl @Inject constructor(private val firebaseDatabas
                     "${dest.latitude},${dest.longitude}",
                     stringProvider.getString(R.string.places_api_key))
 
-    override fun getRoad(currentLocation: LatLng, filterDetails: SightsFilterDetails?): Single<ArrayList<LocalPlace?>> = Single.create { emitter ->
+    override fun getRoad(currentLocation: LatLng, filterDetails: SightsFilterDetails?): Single<ArrayList<Place?>> = Single.create { emitter ->
         val placesToChooseFrom = ArrayList(places)
-        val chosenPlaces: ArrayList<LocalPlace?> = arrayListOf()
+        val chosenPlaces: ArrayList<Place?> = arrayListOf()
 
-        var highestRatedPlace: LocalPlace? = null  // point of origin
+        var highestRatedPlace: Place? = null  // point of origin
         var highestRatedPlaceWeight = 0f
         for (place in places) {
             val placeWeight = place.attractiveness(currentLocation, filterDetails, true, ArrayList(places))
@@ -221,8 +221,8 @@ class PlacesNearbyRepositoryImpl @Inject constructor(private val firebaseDatabas
         emitter.onSuccess(chosenPlaces)
     }
 
-    private fun LocalPlace.getHighestRatedClosePlace(filterDetails: SightsFilterDetails?, placesToChooseFrom: ArrayList<LocalPlace>): LocalPlace? {
-        var highestRatedPlace: LocalPlace? = null  // point of origin
+    private fun Place.getHighestRatedClosePlace(filterDetails: SightsFilterDetails?, placesToChooseFrom: ArrayList<Place>): Place? {
+        var highestRatedPlace: Place? = null  // point of origin
         var highestRatedPlaceWeight = 0f
         for (place in placesToChooseFrom) {
             val placeWeight = place.attractiveness(this.location.asLatLng(), filterDetails, true, placesToChooseFrom)
@@ -234,7 +234,7 @@ class PlacesNearbyRepositoryImpl @Inject constructor(private val firebaseDatabas
         return highestRatedPlace
     }
 
-    private fun LocalPlace.attractiveness(currentLocation: LatLng, filterDetails: SightsFilterDetails?, countClosest: Boolean, placesToChooseFrom: ArrayList<LocalPlace>): Float {
+    private fun Place.attractiveness(currentLocation: LatLng, filterDetails: SightsFilterDetails?, countClosest: Boolean, placesToChooseFrom: ArrayList<Place>): Float {
         var attractiveness: Float = this.rating * 2
 
         if (filterDetails?.hasSouvenirs == true) {
@@ -257,15 +257,15 @@ class PlacesNearbyRepositoryImpl @Inject constructor(private val firebaseDatabas
         return attractiveness
     }
 
-    private fun LocalPlace.getClosestPlaces(amount: Int): List<LocalPlace> = places.map { Pair(it.location.asLatLng().asLocation().distanceTo(location.asLatLng().asLocation()), it) }
+    private fun Place.getClosestPlaces(amount: Int): List<Place> = places.map { Pair(it.location.asLatLng().asLocation().distanceTo(location.asLatLng().asLocation()), it) }
             .sortedBy { it.first }
             .take(amount)
             .map { it.second }
 
-    private fun List<LocalPlace>?.maximumDistanceFrom(localPlace: LocalPlace): Float {
+    private fun List<Place>?.maximumDistanceFrom(place: Place): Float {
         var highestDistance = 0f
         this?.forEach {
-            val distance = localPlace.location?.asLatLng().asLocation().distanceTo(it.location?.asLatLng().asLocation())
+            val distance = place.location?.asLatLng().asLocation().distanceTo(it.location?.asLatLng().asLocation())
             if (distance > highestDistance) {
                 highestDistance = distance
             }

@@ -5,7 +5,7 @@ import com.atc.planner.R
 import com.atc.planner.commons.BitmapProvider
 import com.atc.planner.commons.LocationProvider
 import com.atc.planner.commons.StringProvider
-import com.atc.planner.data.models.local.LocalPlace
+import com.atc.planner.data.models.local.Place
 import com.atc.planner.di.scopes.FragmentScope
 import com.atc.planner.extensions.asLatLng
 import com.atc.planner.extensions.asLatLong
@@ -91,17 +91,17 @@ class MapPresenter @Inject constructor(private val stringProvider: StringProvide
         view?.showCurrentLocation(defaultLocation)
     }
 
-    fun onSetData(items: List<LocalPlace>) {
+    fun onSetData(items: List<Place>) {
         handlePlaces(items)
     }
 
-    fun onAddData(items: List<LocalPlace>) {
+    fun onAddData(items: List<Place>) {
         handlePlaces(items)
     }
 
-    private fun handlePlaces(items: List<LocalPlace>) {
+    private fun handlePlaces(items: List<Place>) {
         if (isMapReady) {
-            Observable.create<Pair<MarkerOptions, LocalPlace>> { emitter ->
+            Observable.create<Pair<MarkerOptions, Place>> { emitter ->
                 var counter = 1
                 items.forEach { place ->
                     val markerOptions = MarkerOptions()
@@ -136,7 +136,7 @@ class MapPresenter @Inject constructor(private val stringProvider: StringProvide
         }
     }
 
-    fun onItemClick(localPlace: LocalPlace?) {
-        view?.goToPlaceDetails(PlaceDetailsBundle(localPlace))
+    fun onItemClick(place: Place?) {
+        view?.goToPlaceDetails(PlaceDetailsBundle(place))
     }
 }

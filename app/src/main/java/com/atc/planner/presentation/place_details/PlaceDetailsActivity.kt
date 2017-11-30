@@ -7,7 +7,7 @@ import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.view.MenuItem
 import com.atc.planner.R
-import com.atc.planner.data.models.local.LocalPlace
+import com.atc.planner.data.models.local.Place
 import com.atc.planner.extensions.setupToolbarWithUpNavigation
 import com.atc.planner.extensions.startActivity
 import com.atc.planner.presentation.base.BaseDictionary
@@ -61,20 +61,20 @@ class PlaceDetailsActivity : BaseMvpActivity<PlaceDetailsView, PlaceDetailsPrese
         photos_recycler_view?.layoutManager = linearLayoutManager
     }
 
-    override fun setUpPlaceDetails(localPlace: LocalPlace?) {
-        supportActionBar?.title = localPlace?.name
-        suffix_text_view?.text = localPlace?.name
-        description_text_view?.text = localPlace?.description
-        address_text_view?.text = localPlace?.address
+    override fun setUpPlaceDetails(place: Place?) {
+        supportActionBar?.title = place?.name
+        suffix_text_view?.text = place?.name
+        description_text_view?.text = place?.description
+        address_text_view?.text = place?.address
 
-        var items = localPlace?.photos.orEmpty().map { PictureItem(it) }
+        var items = place?.photos.orEmpty().map { PictureItem(it) }
         if (items.isEmpty()) {
-            items += PictureItem(localPlace?.thumbnailUrl)
+            items += PictureItem(place?.thumbnailUrl)
         }
         fastAdapter.add(items)
 
         learn_more_button.clicks().subscribe({
-            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(localPlace?.url))
+            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(place?.url))
             startActivity(browserIntent)
         }, ::e)
     }

@@ -2,7 +2,7 @@ package com.atc.planner.data.models.local
 
 import com.atc.planner.data.models.BaseModel
 
-data class LocalPlace(
+data class Place(
         var remoteId: String? = null,
         var level: String? = null,
         val city: String? = null,

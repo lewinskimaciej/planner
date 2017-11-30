@@ -3,7 +3,7 @@ package com.atc.planner.presentation.map
 import android.graphics.Color
 import android.os.Bundle
 import com.atc.planner.R
-import com.atc.planner.data.models.local.LocalPlace
+import com.atc.planner.data.models.local.Place
 import com.atc.planner.extensions.asLatLng
 import com.atc.planner.presentation.base.BaseMvpFragment
 import com.atc.planner.presentation.place_details.PlaceDetailsActivity
@@ -29,7 +29,7 @@ class MapFragment : BaseMvpFragment<MapView, MapPresenter>(), MapView, OnMapRead
 
     private var map: GoogleMap? = null
     private var usersLocationMarker: Marker? = null
-    private var currentItems: HashMap<Marker?, LocalPlace> = hashMapOf()
+    private var currentItems: HashMap<Marker?, Place> = hashMapOf()
 
     override fun createPresenter(): MapPresenter = mapPresenter
 
@@ -75,11 +75,11 @@ class MapFragment : BaseMvpFragment<MapView, MapPresenter>(), MapView, OnMapRead
         }
     }
 
-    override fun setData(items: List<LocalPlace>) {
+    override fun setData(items: List<Place>) {
         presenter?.onSetData(items)
     }
 
-    override fun addData(items: List<LocalPlace>) {
+    override fun addData(items: List<Place>) {
         presenter?.onAddData(items)
     }
 
@@ -87,7 +87,7 @@ class MapFragment : BaseMvpFragment<MapView, MapPresenter>(), MapView, OnMapRead
         map?.clear()
     }
 
-    override fun addMarker(options: MarkerOptions?, place: LocalPlace) {
+    override fun addMarker(options: MarkerOptions?, place: Place) {
         val marker = map?.addMarker(options)
         currentItems.put(marker, place)
     }
