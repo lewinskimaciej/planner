@@ -25,7 +25,7 @@ class MapFragment : BaseMvpFragment<MapView, MapPresenter>(), MapView, OnMapRead
     @Inject
     lateinit var mapPresenter: MapPresenter
 
-    lateinit var rxPermissions: RxPermissions
+    var rxPermissions: RxPermissions? = null
 
     private var map: GoogleMap? = null
     private var usersLocationMarker: Marker? = null
@@ -34,13 +34,15 @@ class MapFragment : BaseMvpFragment<MapView, MapPresenter>(), MapView, OnMapRead
     override fun createPresenter(): MapPresenter = mapPresenter
 
     override fun onViewCreated(savedInstanceState: Bundle?) {
-        rxPermissions = RxPermissions(activity)
+        activity?.let {
+            rxPermissions = RxPermissions(it)
+        }
         showMap()
     }
 
     override fun askForLocationPermission() {
-        rxPermissions.request(android.Manifest.permission.ACCESS_FINE_LOCATION)
-                .subscribe({
+        rxPermissions?.request(android.Manifest.permission.ACCESS_FINE_LOCATION)
+                ?.subscribe({
                     if (it) {
                         presenter?.onPermissionsGranted()
                     } else {
@@ -102,7 +104,9 @@ class MapFragment : BaseMvpFragment<MapView, MapPresenter>(), MapView, OnMapRead
     }
 
     override fun goToPlaceDetails(placeDetailsBundle: PlaceDetailsBundle) {
-        PlaceDetailsActivity.start(context, placeDetailsBundle)
+        context?.let {
+            PlaceDetailsActivity.start(it, placeDetailsBundle)
+        }
     }
 
     override fun drawPolyline(polyline: List<LatLng>) {

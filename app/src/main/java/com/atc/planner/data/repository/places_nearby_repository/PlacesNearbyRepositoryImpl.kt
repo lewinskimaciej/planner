@@ -199,7 +199,7 @@ class PlacesNearbyRepositoryImpl @Inject constructor(private val firebaseDatabas
         var highestRatedPlace: LocalPlace? = null  // point of origin
         var highestRatedPlaceWeight = 0f
         for (place in places) {
-            val placeWeight = place.attractiveness(currentLocation, filterDetails, true)
+            val placeWeight = place.attractiveness(currentLocation, filterDetails, true, ArrayList(places))
             if (placeWeight > highestRatedPlaceWeight) {
                 highestRatedPlace = place
                 highestRatedPlaceWeight = placeWeight
@@ -225,7 +225,7 @@ class PlacesNearbyRepositoryImpl @Inject constructor(private val firebaseDatabas
         var highestRatedPlace: LocalPlace? = null  // point of origin
         var highestRatedPlaceWeight = 0f
         for (place in placesToChooseFrom) {
-            val placeWeight = place.attractiveness(this.location.asLatLng(), filterDetails, true)
+            val placeWeight = place.attractiveness(this.location.asLatLng(), filterDetails, true, placesToChooseFrom)
             if (placeWeight > highestRatedPlaceWeight) {
                 highestRatedPlace = place
                 highestRatedPlaceWeight = placeWeight
@@ -234,7 +234,7 @@ class PlacesNearbyRepositoryImpl @Inject constructor(private val firebaseDatabas
         return highestRatedPlace
     }
 
-    private fun LocalPlace.attractiveness(currentLocation: LatLng, filterDetails: SightsFilterDetails?, countClosest: Boolean): Float {
+    private fun LocalPlace.attractiveness(currentLocation: LatLng, filterDetails: SightsFilterDetails?, countClosest: Boolean, placesToChooseFrom: ArrayList<LocalPlace>): Float {
         var attractiveness: Float = this.rating * 2
 
         if (filterDetails?.hasSouvenirs == true) {
@@ -243,24 +243,34 @@ class PlacesNearbyRepositoryImpl @Inject constructor(private val firebaseDatabas
         if (filterDetails?.childrenFriendly == true) {
             attractiveness += 1
         }
-        val distance = currentLocation.asLocation().distanceTo(this.location.asLatLng().asLocation())
         if (countClosest) {
-            this.getClosestPlaces(3).forEach { attractiveness += it.attractiveness(this.location.asLatLng(), filterDetails, false) }
+            this.getClosestPlaces(3).forEach { attractiveness += it.attractiveness(this.location.asLatLng(), filterDetails, false, placesToChooseFrom) * 0.5f }
         }
-        d { "${this.name} -> attractiveness: $attractiveness, distance: $distance" }
 
-//        if (attractiveness - distance <= 0) {
-//            attractiveness = 1f
-//        } else {
-//            attractiveness -= distance
-//        }
+        val maxDistance = placesToChooseFrom.maximumDistanceFrom(this)
+        val distance = currentLocation.asLocation().distanceTo(this.location.asLatLng().asLocation())
+
+        attractiveness += maxDistance - distance
+
+        d { "${this.name} -> attractiveness: $attractiveness, distance: $distance, maxDistance: $maxDistance" }
 
         return attractiveness
     }
 
-    private fun LocalPlace.getClosestPlaces(amount: Int)
-            : List<LocalPlace> = places.map { Pair(it.location.asLatLng().asLocation().distanceTo(location.asLatLng().asLocation()), it) }
+    private fun LocalPlace.getClosestPlaces(amount: Int): List<LocalPlace> = places.map { Pair(it.location.asLatLng().asLocation().distanceTo(location.asLatLng().asLocation()), it) }
             .sortedBy { it.first }
             .take(amount)
             .map { it.second }
+
+    private fun List<LocalPlace>?.maximumDistanceFrom(localPlace: LocalPlace): Float {
+        var highestDistance = 0f
+        this?.forEach {
+            val distance = localPlace.location?.asLatLng().asLocation().distanceTo(it.location?.asLatLng().asLocation())
+            if (distance > highestDistance) {
+                highestDistance = distance
+            }
+        }
+        return highestDistance
+    }
+
 }

@@ -57,7 +57,7 @@ class SearchService : DaggerService(), LocationListener, BeaconConsumer {
 
     override fun onBind(p0: Intent?): IBinder? = null
 
-    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         d { "onStartCommand" }
         super.onStartCommand(intent, flags, startId)
 

@@ -52,7 +52,7 @@ abstract class BaseMvpFragment<V : BaseView, P : BaseMvpPresenter<V>> : MvpFragm
     }
 
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         d { "onViewCreated" }
         onViewCreated(savedInstanceState)
@@ -71,12 +71,14 @@ abstract class BaseMvpFragment<V : BaseView, P : BaseMvpPresenter<V>> : MvpFragm
     }
 
     override fun showAlertDialog(title: String, message: String) {
-        AlertDialog.Builder(activity, R.style.AppTheme)
-                .setMessage(message)
-                .setTitle(title)
-                .setPositiveButton(R.string.common_dialog_ok, { dialog, _ ->
-                    dialog.dismiss()
-                })
+        activity?.let {
+            AlertDialog.Builder(it, R.style.AppTheme)
+                    .setMessage(message)
+                    .setTitle(title)
+                    .setPositiveButton(R.string.common_dialog_ok, { dialog, _ ->
+                        dialog.dismiss()
+                    })
+        }
     }
 
     override fun showErrorToast() {
@@ -84,7 +86,9 @@ abstract class BaseMvpFragment<V : BaseView, P : BaseMvpPresenter<V>> : MvpFragm
     }
 
     override fun showOfflineSnackbar() {
-        val rootView = activity.findViewById<ViewGroup>(android.R.id.content).getChildAt(0)
-        Snackbar.make(rootView, getString(R.string.no_internet_connection), Snackbar.LENGTH_LONG)
+        val rootView = activity?.findViewById<ViewGroup>(android.R.id.content)?.getChildAt(0)
+        rootView?.let {
+            Snackbar.make(it, getString(R.string.no_internet_connection), Snackbar.LENGTH_LONG)
+        }
     }
 }
