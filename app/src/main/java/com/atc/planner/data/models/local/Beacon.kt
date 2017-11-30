@@ -2,7 +2,13 @@ package com.atc.planner.data.models.local
 
 import com.google.gson.annotations.SerializedName
 
-data class Beacon(@SerializedName("uuid") var uuid: String? = null,
+data class Beacon(@SerializedName("id") var id: String? = null,
+                  @SerializedName("uuid") var uuid: String? = null,
                   @SerializedName("major") var major: String? = null,
                   @SerializedName("minor") var minor: String? = null,
-                  @SerializedName("place") var place: Place? = null)
+                  @SerializedName("areaId") var areaId: String? = null) {
+
+    override fun equals(other: Any?): Boolean = other is Beacon && this.id == other.id
+
+    override fun hashCode(): Int = this.id.orEmpty().hashCode()
+}

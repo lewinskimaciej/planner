@@ -103,13 +103,15 @@ class MapPresenter @Inject constructor(private val stringProvider: StringProvide
         if (isMapReady) {
             Observable.create<Pair<MarkerOptions, Place>> { emitter ->
                 var counter = 1
-                items.forEach { place ->
+                for (index in items.indices) {
                     val markerOptions = MarkerOptions()
-                    place.location?.asLatLng()?.let { placeLocation ->
+
+                    val placeLocation = items[index].location?.asLatLng()
+                    if (placeLocation != null) {
                         markerOptions.position(placeLocation)
-                        bitmapProvider.getRoundedBitmap(place.thumbnailUrl, R.drawable.error_marker, {
+                        bitmapProvider.getRoundedBitmap(items[index].thumbnailUrl, R.drawable.error_marker, {
                             markerOptions.icon(BitmapDescriptorFactory.fromBitmap(it))
-                            emitter.onNext(Pair(markerOptions, place))
+                            emitter.onNext(Pair(markerOptions, items[index]))
 
                             counter++
                             if (counter == items.size) {
@@ -117,7 +119,7 @@ class MapPresenter @Inject constructor(private val stringProvider: StringProvide
                             }
                         }, {
                             markerOptions.icon(BitmapDescriptorFactory.fromBitmap(it))
-                            emitter.onNext(Pair(markerOptions, place))
+                            emitter.onNext(Pair(markerOptions, items[index]))
 
                             counter++
                             if (counter == items.size) {

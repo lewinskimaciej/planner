@@ -76,7 +76,7 @@ class MainPresenter @Inject constructor(private val stringProvider: StringProvid
     }
 
     private fun getDirections(currentLocation: LatLng, filterDetails: SightsFilterDetails?) {
-        placesNearbyRepository.getRoad(currentLocation, filterDetails)
+        placesNearbyRepository.getRoute(currentLocation, filterDetails)
                 .subscribeOn(Schedulers.computation())
                 .map {
                     it.removeAll { it == null }
@@ -84,7 +84,6 @@ class MainPresenter @Inject constructor(private val stringProvider: StringProvid
                 }
                 .toObservable()
                 .flatMapIterable { it }
-                .doOnNext { d { "FOUND: ${it.name}" } }
                 .toList()
                 .map { locations ->
                     val pairs: ArrayList<Pair<LatLng, LatLng>> = arrayListOf()
@@ -97,9 +96,7 @@ class MainPresenter @Inject constructor(private val stringProvider: StringProvid
                 .flatMapIterable { it }
                 .observeOn(Schedulers.io())
                 .flatMap {
-                    d { "getting polyline for $it" }
                     placesNearbyRepository.getDirections(it.first, it.second)
-                            .subscribeOn(Schedulers.io())
                             .map { it.routes.first() }
                             .map { decodePoly(it.overviewPolyline.points) }
                             .toObservable()

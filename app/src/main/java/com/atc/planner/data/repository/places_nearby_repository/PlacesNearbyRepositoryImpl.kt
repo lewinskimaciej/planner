@@ -192,29 +192,31 @@ class PlacesNearbyRepositoryImpl @Inject constructor(private val firebaseDatabas
                     "${dest.latitude},${dest.longitude}",
                     stringProvider.getString(R.string.places_api_key))
 
-    override fun getRoad(currentLocation: LatLng, filterDetails: SightsFilterDetails?): Single<ArrayList<Place?>> = Single.create { emitter ->
+    override fun getRoute(currentLocation: LatLng, filterDetails: SightsFilterDetails?): Single<ArrayList<Place?>> = Single.create { emitter ->
+        d { "getRoute" }
         val placesToChooseFrom = ArrayList(places)
         val chosenPlaces: ArrayList<Place?> = arrayListOf()
 
-        var highestRatedPlace: Place? = null  // point of origin
-        var highestRatedPlaceWeight = 0f
-        for (place in places) {
-            val placeWeight = place.attractiveness(currentLocation, filterDetails, true, ArrayList(places))
-            if (placeWeight > highestRatedPlaceWeight) {
-                highestRatedPlace = place
-                highestRatedPlaceWeight = placeWeight
+        var closesPlace: Place? = null  // point of origin
+        var closestPlaceDistance = Float.MAX_VALUE
+        for (index in places.indices) {
+            val distance = currentLocation.asLocation().distanceTo(places[index].location.asLatLng().asLocation())
+            if (distance < closestPlaceDistance) {
+                closesPlace = places[index]
+                closestPlaceDistance = distance
             }
         }
-        chosenPlaces.add(highestRatedPlace)
-        placesToChooseFrom.remove(highestRatedPlace)
-        var lastBestPlace = highestRatedPlace
+        d { "getRoute first chosen" }
+        chosenPlaces.add(closesPlace)
+        placesToChooseFrom.remove(closesPlace)
+        var lastBestPlace = closesPlace
         for (count in 0..5) {
+            d { "getRoute choosing $count" }
             val tempPlace = lastBestPlace?.getHighestRatedClosePlace(filterDetails, placesToChooseFrom)
             lastBestPlace = tempPlace
             if (tempPlace != null) {
                 chosenPlaces.add(tempPlace)
                 placesToChooseFrom.remove(tempPlace)
-                d { "CHOSE place #$count: ${tempPlace.name}" }
             }
         }
 
@@ -224,13 +226,16 @@ class PlacesNearbyRepositoryImpl @Inject constructor(private val firebaseDatabas
     private fun Place.getHighestRatedClosePlace(filterDetails: SightsFilterDetails?, placesToChooseFrom: ArrayList<Place>): Place? {
         var highestRatedPlace: Place? = null  // point of origin
         var highestRatedPlaceWeight = 0f
+//        d { "CHOSE ------------------------------ choosing best place for ${this.name}" }
         for (place in placesToChooseFrom) {
             val placeWeight = place.attractiveness(this.location.asLatLng(), filterDetails, true, placesToChooseFrom)
+//            d { "CHOSE ${place.name} has weight of $placeWeight" }
             if (placeWeight > highestRatedPlaceWeight) {
                 highestRatedPlace = place
                 highestRatedPlaceWeight = placeWeight
             }
         }
+//        d { "CHOSE chosen -------> ${highestRatedPlace?.name} attractiveness: $highestRatedPlaceWeight" }
         return highestRatedPlace
     }
 
@@ -243,16 +248,13 @@ class PlacesNearbyRepositoryImpl @Inject constructor(private val firebaseDatabas
         if (filterDetails?.childrenFriendly == true) {
             attractiveness += 1
         }
-        if (countClosest) {
-            this.getClosestPlaces(3).forEach { attractiveness += it.attractiveness(this.location.asLatLng(), filterDetails, false, placesToChooseFrom) * 0.5f }
-        }
 
         val maxDistance = placesToChooseFrom.maximumDistanceFrom(this)
-        val distance = currentLocation.asLocation().distanceTo(this.location.asLatLng().asLocation())
+        val distance = this.location.asLatLng().asLocation().distanceTo(currentLocation.asLocation())
 
-        attractiveness += maxDistance - distance
+        attractiveness += (maxDistance - distance) / 10
 
-        d { "${this.name} -> attractiveness: $attractiveness, distance: $distance, maxDistance: $maxDistance" }
+//        d {"${this.name} attr: $attractiveness distance: $distance maxDistance: $maxDistance"}
 
         return attractiveness
     }
