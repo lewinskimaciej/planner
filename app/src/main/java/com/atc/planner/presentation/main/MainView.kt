@@ -9,4 +9,5 @@ interface MainView : BaseView {
     fun setItems(items: List<Place>)
     fun addItems(items: List<Place>)
     fun addPolyline(polyline: List<LatLng>)
+    fun highlightMarker(place: Place?)
 }

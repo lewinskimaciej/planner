@@ -181,9 +181,10 @@ class SearchService : DaggerService(), LocationListener, BeaconConsumer {
         seenBeacons.add(BeaconSeenEvent(System.currentTimeMillis(), matchedBeacon.uuid, matchedBeacon.major, matchedBeacon.minor))
         Paper.book().write(BeaconSeenEvent::class.java.simpleName, seenBeacons)
 
-        matchedBeacon.place?.let {
-            handleNotification(listOf(it))
-        }
+//        matchedBeacon.place?.let {
+//            handleNotification(listOf(it))
+//        }
+        // todo get area by id, then get it's place, then show notification
     }
 
     private fun handleNotification(placesNearby: List<Place>) {

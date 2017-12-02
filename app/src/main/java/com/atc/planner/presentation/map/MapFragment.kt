@@ -116,4 +116,8 @@ class MapFragment : BaseMvpFragment<MapView, MapPresenter>(), MapView, OnMapRead
         options.color(Color.parseColor("#05b1fb"))
         map?.addPolyline(options)
     }
+
+    override fun highlightMarker(place: Place?) {
+        // todo
+    }
 }

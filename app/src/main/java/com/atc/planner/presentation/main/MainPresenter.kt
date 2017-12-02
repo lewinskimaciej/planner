@@ -3,6 +3,7 @@ package com.atc.planner.presentation.main
 import com.atc.planner.R
 import com.atc.planner.commons.LocationProvider
 import com.atc.planner.commons.StringProvider
+import com.atc.planner.data.models.local.Place
 import com.atc.planner.data.repository.places_nearby_repository.PlacesNearbyRepository
 import com.atc.planner.data.repository.places_nearby_repository.SightsFilterDetails
 import com.atc.planner.data.repository.user_details_repository.UserDetailsRepository
@@ -14,6 +15,7 @@ import com.atc.planner.presentation.base.BaseMvpPresenter
 import com.github.ajalt.timberkt.d
 import com.github.ajalt.timberkt.e
 import com.google.android.gms.maps.model.LatLng
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import java.io.Serializable
@@ -60,7 +62,7 @@ class MainPresenter @Inject constructor(private val stringProvider: StringProvid
                         .subscribe({
                             d { "got ${it.size} items" }
                             view?.setItems(it)
-                            getDirections(location, filterDetails)
+                            resolveRoute()
                         }, {
                             if (it is NoSuchElementException) {
                                 view?.showAlertDialog(stringProvider.getString(R.string.geocoder_encountered_a_problem),
@@ -75,44 +77,62 @@ class MainPresenter @Inject constructor(private val stringProvider: StringProvid
         }
     }
 
-    private fun getDirections(currentLocation: LatLng, filterDetails: SightsFilterDetails?) {
-        placesNearbyRepository.getRoad(currentLocation, filterDetails)
-                .subscribeOn(Schedulers.computation())
-                .map {
-                    it.removeAll { it == null }
-                    it
-                }
-                .toObservable()
-                .flatMapIterable { it }
-                .doOnNext { d { "FOUND: ${it.name}" } }
-                .toList()
-                .map { locations ->
-                    val pairs: ArrayList<Pair<LatLng, LatLng>> = arrayListOf()
+    private fun resolveRoute() {
+        val existingRoute = userDetailsRepository.getRoute()
+        if (existingRoute.isNotEmpty()) {
+            getRoute(Single.just(existingRoute))
+        } else {
+            currentLocation?.let { location ->
+                val filterDetails = userDetailsRepository.getFilterDetails()
+                getRoute(computeRoute(location, filterDetails))
+            }
+        }
+    }
+
+    private fun getRoute(source: Single<List<Place?>>) {
+        source.map { locations ->
+            val triples: ArrayList<Triple<Place?, LatLng, LatLng>> = arrayListOf()
                     for (i in 0..(locations.size - 2)) {
-                        pairs.add(Pair(locations[i]?.location.asLatLng(), locations[i + 1]?.location.asLatLng()))
+                        triples.add(Triple(locations[i], locations[i]?.location.asLatLng(), locations[i + 1]?.location.asLatLng()))
                     }
-                    pairs
+            triples
                 }
                 .toObservable()
                 .flatMapIterable { it }
                 .observeOn(Schedulers.io())
-                .flatMap {
-                    d { "getting polyline for $it" }
-                    placesNearbyRepository.getDirections(it.first, it.second)
-                            .subscribeOn(Schedulers.io())
+                .flatMap { triple ->
+                    placesNearbyRepository.getDirections(triple.second, triple.third)
                             .map { it.routes.first() }
-                            .map { decodePoly(it.overviewPolyline.points) }
+                            .map { Pair(triple.first, decodePoly(it.overviewPolyline.points)) }
                             .toObservable()
                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     d { "onSuccess " }
-                    view?.addPolyline(it)
+                    view?.addPolyline(it.second)
                     d { "addedPolyline" }
+                    view?.highlightMarker(it.first)
                 }, ::e)
     }
+
+    private fun computeRoute(currentLocation: LatLng, filterDetails: SightsFilterDetails?) = placesNearbyRepository.getRoute(currentLocation, filterDetails)
+            .subscribeOn(Schedulers.computation())
+            .map {
+                it.removeAll { it == null }
+                it
+            }
+            .toObservable()
+            .flatMapIterable { it }
+            .toList()
+            .doOnSuccess {
+                saveRouteLocally(it)
+            }
+
+    private fun saveRouteLocally(route: List<Place?>) {
+        userDetailsRepository.saveRoute(route)
+    }
 /*
-   placesNearbyRepository.getDirections(it[0]?.location.asLatLng(), it[1]?.location.asLatLng()).toObservable()
+   placesNearbyRepository.getRoute(it[0]?.location.asLatLng(), it[1]?.location.asLatLng()).toObservable()
                 .map { it.routes.first() }
                 .map { decodePoly(it.overviewPolyline.points) }
  */

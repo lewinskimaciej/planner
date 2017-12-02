@@ -12,5 +12,5 @@ interface PlacesNearbyRepository {
     fun getDirections(source: LatLng, dest: LatLng): Single<DirectionsResponse>
     fun getPlacesFromSygic(latLng: LatLng): Single<List<Place>>
     fun getLocallySavedSightsNearby(): List<Place>
-    fun getRoad(currentLocation: LatLng, filterDetails: SightsFilterDetails?): Single<ArrayList<Place?>>
+    fun getRoute(currentLocation: LatLng, filterDetails: SightsFilterDetails?): Single<ArrayList<Place?>>
 }
