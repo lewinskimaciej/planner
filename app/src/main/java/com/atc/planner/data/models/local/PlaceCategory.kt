@@ -6,7 +6,7 @@ enum class PlaceCategory {
     SIGHT, FOOD, AMUSEMENT, ART_GALLERY, MUSEUM, PHYSICAL_ACTIVITY, OTHER
 }
 
-fun Category?.asPlaceType(): PlaceCategory = when (this) {
+fun Category?.asPlaceCategory(): PlaceCategory = when (this) {
     Category.EATING -> PlaceCategory.FOOD
 
     Category.DISCOVERING,

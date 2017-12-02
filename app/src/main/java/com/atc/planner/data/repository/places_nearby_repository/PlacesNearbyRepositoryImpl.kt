@@ -6,7 +6,7 @@ import com.atc.planner.commons.StringProvider
 import com.atc.planner.data.models.local.Beacon
 import com.atc.planner.data.models.local.DataSource
 import com.atc.planner.data.models.local.Place
-import com.atc.planner.data.models.local.asPlaceType
+import com.atc.planner.data.models.local.asPlaceCategory
 import com.atc.planner.data.models.remote.sygic_api.Category
 import com.atc.planner.data.models.remote.sygic_api.asCategory
 import com.atc.planner.data.remote_services.DirectionsRemoteService
@@ -117,7 +117,7 @@ class PlacesNearbyRepositoryImpl @Inject constructor(private val firebaseDatabas
                     val localPlace = Place(it.id,
                             it.level,
                             "Wrocław",
-                            it.categories?.map { it.asCategory().asPlaceType() },
+                            it.categories?.map { it.asCategory().asPlaceCategory() },
                             it.rating,
                             it.location.asLatLong(),
                             it.name,
