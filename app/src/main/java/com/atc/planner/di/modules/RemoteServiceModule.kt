@@ -1,6 +1,6 @@
 package com.atc.planner.di.modules
 
-import com.atc.planner.data.remote_services.DirectionsRemoteService
+import com.atc.planner.data.remote_service.DirectionsRemoteService
 import dagger.Module
 import dagger.Provides
 import retrofit2.Retrofit

@@ -5,7 +5,7 @@ import android.support.v4.app.Fragment
 import android.view.Menu
 import android.view.MenuItem
 import com.atc.planner.R
-import com.atc.planner.data.models.local.Place
+import com.atc.planner.data.model.local.Place
 import com.atc.planner.presentation.base.BaseMvpActivity
 import com.atc.planner.presentation.map.MapFragment
 import com.atc.planner.presentation.map.MapView

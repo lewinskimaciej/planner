@@ -5,10 +5,10 @@ import android.os.Bundle
 import android.view.MenuItem
 import com.atc.planner.R
 import com.atc.planner.data.repository.places_nearby_repository.SightsFilterDetails
-import com.atc.planner.extensions.orFalse
-import com.atc.planner.extensions.orZero
-import com.atc.planner.extensions.setupToolbarWithUpNavigation
-import com.atc.planner.extensions.startActivity
+import com.atc.planner.extension.orFalse
+import com.atc.planner.extension.orZero
+import com.atc.planner.extension.setupToolbarWithUpNavigation
+import com.atc.planner.extension.startActivity
 import com.atc.planner.presentation.base.BaseMvpActivity
 import com.github.ajalt.timberkt.e
 import com.jakewharton.rxbinding2.widget.checkedChanges

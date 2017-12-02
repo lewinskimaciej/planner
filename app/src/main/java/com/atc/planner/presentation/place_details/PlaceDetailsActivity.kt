@@ -7,9 +7,9 @@ import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.view.MenuItem
 import com.atc.planner.R
-import com.atc.planner.data.models.local.Place
-import com.atc.planner.extensions.setupToolbarWithUpNavigation
-import com.atc.planner.extensions.startActivity
+import com.atc.planner.data.model.local.Place
+import com.atc.planner.extension.setupToolbarWithUpNavigation
+import com.atc.planner.extension.startActivity
 import com.atc.planner.presentation.base.BaseDictionary
 import com.atc.planner.presentation.base.BaseMvpActivity
 import com.atc.planner.presentation.place_details.adapter.PictureItem

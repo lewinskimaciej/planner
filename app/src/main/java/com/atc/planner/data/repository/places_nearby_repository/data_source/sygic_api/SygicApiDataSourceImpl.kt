@@ -1,8 +1,8 @@
 package com.atc.planner.data.repository.places_nearby_repository.data_source.sygic_api
 
 import android.content.res.Resources
-import com.atc.planner.data.models.remote.sygic_api.Category
-import com.atc.planner.extensions.boundingBox
+import com.atc.planner.data.model.remote.sygic_api.Category
+import com.atc.planner.extension.boundingBox
 import com.github.ajalt.timberkt.d
 import com.google.android.gms.maps.model.LatLng
 import com.sygic.travel.sdk.StSDK

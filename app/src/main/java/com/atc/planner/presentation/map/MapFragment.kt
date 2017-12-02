@@ -3,8 +3,8 @@ package com.atc.planner.presentation.map
 import android.graphics.Color
 import android.os.Bundle
 import com.atc.planner.R
-import com.atc.planner.data.models.local.Place
-import com.atc.planner.extensions.asLatLng
+import com.atc.planner.data.model.local.Place
+import com.atc.planner.extension.asLatLng
 import com.atc.planner.presentation.base.BaseMvpFragment
 import com.atc.planner.presentation.place_details.PlaceDetailsActivity
 import com.atc.planner.presentation.place_details.PlaceDetailsBundle

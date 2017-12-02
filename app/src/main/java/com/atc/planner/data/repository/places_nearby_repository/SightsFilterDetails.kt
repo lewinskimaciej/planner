@@ -1,6 +1,6 @@
 package com.atc.planner.data.repository.places_nearby_repository
 
-import com.atc.planner.data.models.BaseModel
+import com.atc.planner.data.model.BaseModel
 
 data class SightsFilterDetails(var targetsChildren: Boolean? = false,
                                var childrenFriendly: Boolean? = true,

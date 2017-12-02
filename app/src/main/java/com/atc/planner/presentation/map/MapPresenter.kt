@@ -5,10 +5,10 @@ import com.atc.planner.R
 import com.atc.planner.commons.BitmapProvider
 import com.atc.planner.commons.LocationProvider
 import com.atc.planner.commons.StringProvider
-import com.atc.planner.data.models.local.Place
+import com.atc.planner.data.model.local.Place
 import com.atc.planner.di.scopes.FragmentScope
-import com.atc.planner.extensions.asLatLng
-import com.atc.planner.extensions.asLatLong
+import com.atc.planner.extension.asLatLng
+import com.atc.planner.extension.asLatLong
 import com.atc.planner.presentation.base.BaseMvpPresenter
 import com.atc.planner.presentation.place_details.PlaceDetailsBundle
 import com.github.ajalt.timberkt.Timber.e

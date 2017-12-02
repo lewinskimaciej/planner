@@ -1,4 +1,4 @@
-package com.atc.planner.data.models.remote.sygic_api
+package com.atc.planner.data.model.remote.sygic_api
 
 enum class Category(val value: String) {
     DISCOVERING("discovering"),

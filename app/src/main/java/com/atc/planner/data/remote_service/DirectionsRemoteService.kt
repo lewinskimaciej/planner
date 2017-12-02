@@ -1,6 +1,6 @@
-package com.atc.planner.data.remote_services
+package com.atc.planner.data.remote_service
 
-import com.atc.planner.data.models.remote.DirectionsResponse
+import com.atc.planner.data.model.remote.DirectionsResponse
 import io.reactivex.Single
 import retrofit2.http.POST
 import retrofit2.http.Query

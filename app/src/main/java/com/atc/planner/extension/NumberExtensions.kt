@@ -1,4 +1,4 @@
-package com.atc.planner.extensions
+package com.atc.planner.extension
 
 import android.content.res.Resources
 import android.util.TypedValue

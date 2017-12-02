@@ -1,8 +1,8 @@
 package com.atc.planner.data.repository.places_nearby_repository
 
-import com.atc.planner.data.models.local.Beacon
-import com.atc.planner.data.models.local.Place
-import com.atc.planner.data.models.remote.DirectionsResponse
+import com.atc.planner.data.model.local.Beacon
+import com.atc.planner.data.model.local.Place
+import com.atc.planner.data.model.remote.DirectionsResponse
 import com.google.android.gms.maps.model.LatLng
 import io.reactivex.Single
 

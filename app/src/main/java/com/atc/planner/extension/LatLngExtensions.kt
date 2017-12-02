@@ -1,6 +1,6 @@
-package com.atc.planner.extensions
+package com.atc.planner.extension
 
-import com.atc.planner.data.models.local.LatLong
+import com.atc.planner.data.model.local.LatLong
 import com.google.android.gms.maps.model.LatLng
 import com.sygic.travel.sdk.model.geo.Bounds
 import com.sygic.travel.sdk.model.geo.Location

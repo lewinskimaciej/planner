@@ -1,6 +1,6 @@
-package com.atc.planner.data.models.local
+package com.atc.planner.data.model.local
 
-import com.atc.planner.data.models.remote.sygic_api.Category
+import com.atc.planner.data.model.remote.sygic_api.Category
 
 enum class PlaceCategory {
     SIGHT, FOOD, AMUSEMENT, ART_GALLERY, MUSEUM, PHYSICAL_ACTIVITY, VIEW, OTHER

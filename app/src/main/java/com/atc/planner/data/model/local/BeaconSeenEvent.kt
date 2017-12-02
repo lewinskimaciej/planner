@@ -1,4 +1,4 @@
-package com.atc.planner.data.models.local
+package com.atc.planner.data.model.local
 
 data class BeaconSeenEvent(var dateInMillis: Long?,
                            var uuid: String?,

@@ -1,4 +1,4 @@
-package com.atc.planner.extensions
+package com.atc.planner.extension
 
 import android.net.Uri
 import android.support.annotation.IdRes

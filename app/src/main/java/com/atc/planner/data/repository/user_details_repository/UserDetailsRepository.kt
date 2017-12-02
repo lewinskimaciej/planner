@@ -1,6 +1,6 @@
 package com.atc.planner.data.repository.user_details_repository
 
-import com.atc.planner.data.models.local.Place
+import com.atc.planner.data.model.local.Place
 import com.atc.planner.data.repository.places_nearby_repository.SightsFilterDetails
 
 interface UserDetailsRepository {

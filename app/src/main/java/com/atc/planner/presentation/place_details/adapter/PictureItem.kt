@@ -4,7 +4,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.ImageView
 import com.atc.planner.R
-import com.atc.planner.extensions.loadImage
+import com.atc.planner.extension.loadImage
 import com.mikepenz.fastadapter.items.AbstractItem
 import kotlinx.android.synthetic.main.adapter_item_picture.view.*
 

@@ -1,4 +1,4 @@
-package com.atc.planner.extensions
+package com.atc.planner.extension
 
 fun Boolean?.orFalse() = this ?: false
 

@@ -1,6 +1,6 @@
 package com.atc.planner.presentation.main
 
-import com.atc.planner.data.models.local.Place
+import com.atc.planner.data.model.local.Place
 import com.atc.planner.presentation.base.BaseView
 import com.google.android.gms.maps.model.LatLng
 

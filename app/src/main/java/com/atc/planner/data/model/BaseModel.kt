@@ -1,4 +1,4 @@
-package com.atc.planner.data.models
+package com.atc.planner.data.model
 
 import java.io.Serializable
 

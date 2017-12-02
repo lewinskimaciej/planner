@@ -12,12 +12,12 @@ import android.support.v4.app.NotificationCompat
 import com.atc.planner.BuildConfig
 import com.atc.planner.R
 import com.atc.planner.commons.LocationProvider
-import com.atc.planner.data.models.local.BeaconSeenEvent
-import com.atc.planner.data.models.local.Place
+import com.atc.planner.data.model.local.BeaconSeenEvent
+import com.atc.planner.data.model.local.Place
 import com.atc.planner.data.repository.places_nearby_repository.PlacesNearbyRepository
-import com.atc.planner.extensions.asLatLng
-import com.atc.planner.extensions.asLatLong
-import com.atc.planner.extensions.distanceTo
+import com.atc.planner.extension.asLatLng
+import com.atc.planner.extension.asLatLong
+import com.atc.planner.extension.distanceTo
 import com.atc.planner.presentation.base.BaseDictionary
 import com.atc.planner.presentation.place_details.PlaceDetailsActivity
 import com.atc.planner.presentation.place_details.PlaceDetailsBundle
@@ -46,7 +46,7 @@ class SearchService : DaggerService(), LocationListener, BeaconConsumer {
     lateinit var beaconManager: BeaconManager
 
     private var sightsNearby: List<Place> = listOf()
-    private var beaconsNearby: List<com.atc.planner.data.models.local.Beacon> = listOf()
+    private var beaconsNearby: List<com.atc.planner.data.model.local.Beacon> = listOf()
     private var placesWithNotificationShown: ArrayList<Place> = arrayListOf()
 
     private lateinit var notificationManager: NotificationManager
@@ -173,7 +173,7 @@ class SearchService : DaggerService(), LocationListener, BeaconConsumer {
         }
     }
 
-    private fun showNotificationForBeacon(matchedBeacon: com.atc.planner.data.models.local.Beacon) {
+    private fun showNotificationForBeacon(matchedBeacon: com.atc.planner.data.model.local.Beacon) {
         var seenBeacons = Paper.book().read<ArrayList<BeaconSeenEvent>>(BeaconSeenEvent::class.java.simpleName)
         if (seenBeacons == null) {
             seenBeacons = arrayListOf()

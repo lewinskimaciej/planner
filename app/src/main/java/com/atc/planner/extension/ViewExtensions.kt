@@ -1,4 +1,4 @@
-package com.atc.planner.extensions
+package com.atc.planner.extension
 
 import android.animation.Animator
 import android.graphics.Rect
