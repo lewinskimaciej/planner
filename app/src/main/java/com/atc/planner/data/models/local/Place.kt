@@ -6,7 +6,7 @@ data class Place(
         var remoteId: String? = null,
         var level: String? = null,
         val city: String? = null,
-        var categories: List<PlaceType>? = null,
+        var categories: List<PlaceCategory>? = null,
         var rating: Float = 0.toFloat(),
         var location: LatLong? = null,
         var name: String? = null,
