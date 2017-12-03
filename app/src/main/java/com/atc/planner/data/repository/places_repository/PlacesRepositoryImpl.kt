@@ -157,7 +157,7 @@ class PlacesRepositoryImpl @Inject constructor(private val firebaseDatabaseDataS
         val placesToChooseFrom = ArrayList(places)
         val chosenPlaces: ArrayList<Place?> = arrayListOf()
 
-        var closestPlace: Place? = null  // point of origin
+        var closestPlace: Place? = null
         var closestPlaceDistance = Float.MAX_VALUE
         for (index in places.indices) {
             val distance = currentLocation.asLocation().distanceTo(places[index].location.asLatLng().asLocation())
