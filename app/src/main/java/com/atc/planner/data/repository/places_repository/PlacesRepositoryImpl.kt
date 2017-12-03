@@ -201,24 +201,17 @@ class PlacesRepositoryImpl @Inject constructor(private val firebaseDatabaseDataS
 
         var attractiveness: Float = (maxDistance - distance) / 10
 
-        attractiveness += this.rating * 2
+        attractiveness += this.rating * 3
 
         if (filterDetails?.hasSouvenirs == true) {
-            attractiveness += 5
+            attractiveness += 10
         }
         if (filterDetails?.childrenFriendly == true) {
             attractiveness += 10
         }
 
-//        d {"${this.name} attr: $attractiveness distance: $distance maxDistance: $maxDistance"}
-
         return attractiveness
     }
-
-    private fun Place.getClosestPlaces(amount: Int): List<Place> = places.map { Pair(it.location.asLatLng().asLocation().distanceTo(location.asLatLng().asLocation()), it) }
-            .sortedBy { it.first }
-            .take(amount)
-            .map { it.second }
 
     private fun List<Place>?.maximumDistanceFrom(place: Place): Float {
         var highestDistance = 0f
@@ -232,5 +225,4 @@ class PlacesRepositoryImpl @Inject constructor(private val firebaseDatabaseDataS
         }
         return highestDistance
     }
-
 }
