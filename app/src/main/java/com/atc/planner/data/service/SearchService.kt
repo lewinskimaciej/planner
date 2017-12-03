@@ -46,7 +46,7 @@ class SearchService : DaggerService(), LocationListener, BeaconConsumer {
     lateinit var beaconManager: BeaconManager
 
     private var sightsNearby: List<Place> = listOf()
-    private var beaconsNearby: List<com.atc.planner.data.model.local.Beacon> = listOf()
+    private var beaconsFromDatabase: List<com.atc.planner.data.model.local.Beacon> = listOf()
     private var placesWithNotificationShown: ArrayList<Place> = arrayListOf()
 
     private lateinit var notificationManager: NotificationManager
@@ -108,9 +108,9 @@ class SearchService : DaggerService(), LocationListener, BeaconConsumer {
             seenBeacons = arrayListOf()
         }
 
-        if (beaconsNearby.isNotEmpty()) {
+        if (beaconsFromDatabase.isNotEmpty()) {
             beacons.forEach { beacon ->
-                val matchedBeacon = beaconsNearby.find {
+                val matchedBeacon = beaconsFromDatabase.find {
                     it.uuid == beacon.id1.toString()
                             && it.major == beacon.id2.toString()
                             && it.minor == beacon.id3.toString()
@@ -147,11 +147,11 @@ class SearchService : DaggerService(), LocationListener, BeaconConsumer {
                 checkIfCloseToPlaceByLocation(latLong)
             }
 
-            if (beaconsNearby.isEmpty()) {
+            if (beaconsFromDatabase.isEmpty()) {
                 placesRepository.getBeaconsNearby(latLong)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({ beaconsNearby = it }, ::e)
+                        .subscribe({ beaconsFromDatabase = it }, ::e)
             }
         }
     }
