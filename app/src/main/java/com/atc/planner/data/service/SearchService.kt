@@ -140,8 +140,8 @@ class SearchService : DaggerService(), LocationListener, BeaconConsumer {
         val latLong = p0?.asLatLong()
         if (latLong != null) {
             if (sightsNearby.isEmpty()) {
-                d { "getSightsNearby" }
-                sightsNearby = placesRepository.getLocallySavedSightsNearby()
+                d { "getPlacesNearby" }
+                sightsNearby = placesRepository.getLocallySavedPlacesNearby()
                 checkIfCloseToPlaceByLocation(latLong)
             } else {
                 checkIfCloseToPlaceByLocation(latLong)

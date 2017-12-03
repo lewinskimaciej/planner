@@ -12,12 +12,14 @@ import com.atc.planner.data.model.remote.sygic_api.asCategory
 import com.atc.planner.data.remote_service.DirectionsRemoteService
 import com.atc.planner.data.repository.places_repository.data_source.firebase_database.FirebaseDatabaseDataSource
 import com.atc.planner.data.repository.places_repository.data_source.sygic_api.SygicApiDataSource
-import com.atc.planner.extension.*
+import com.atc.planner.extension.asLatLng
+import com.atc.planner.extension.asLatLong
+import com.atc.planner.extension.asLocation
+import com.atc.planner.extension.random
 import com.github.ajalt.timberkt.d
 import com.github.ajalt.timberkt.e
 import com.google.android.gms.maps.model.LatLng
 import io.reactivex.Single
-import org.joda.time.DateTime
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -32,12 +34,10 @@ class PlacesRepositoryImpl @Inject constructor(private val firebaseDatabaseDataS
     private var places: List<Place> = listOf()
 
     private var beaconsNearby: List<Beacon> = listOf()
-    private var lastBeaconsDownloadTime: DateTime? = null
-    private var lastCityBeaconsWereDownloadedFor: String? = null
 
-    override fun getLocallySavedSightsNearby(): List<Place> = places
+    override fun getLocallySavedPlacesNearby(): List<Place> = places
 
-    override fun getSightsNearby(latLng: LatLng, filterDetails: SightsFilterDetails?): Single<List<Place>> {
+    override fun getPlacesNearby(latLng: LatLng, filterDetails: SightsFilterDetails?): Single<List<Place>> {
         val city = cityProvider.getCity(latLng)
 
         return if (city != null) {
@@ -166,20 +166,16 @@ class PlacesRepositoryImpl @Inject constructor(private val firebaseDatabaseDataS
     }
 
     override fun getBeaconsNearby(latLng: LatLng): Single<List<Beacon>> {
-        val city = cityProvider.getCity(latLng)
-        // if city is same as before, and last call was recent, return cached response
-        if (lastCityBeaconsWereDownloadedFor == city
-                && DateTime.now().millis - lastBeaconsDownloadTime?.millis.orZero() > 1000 * 60 * 5
-                && beaconsNearby.isNotEmpty()) {
+        if (beaconsNearby.isNotEmpty()) {
             return Single.just(beaconsNearby)
         }
+
+        val city = cityProvider.getCity(latLng)
 
         return if (city != null) {
             firebaseDatabaseDataSource.getBeaconsNearby(city)
                     .doOnSuccess {
                         beaconsNearby = it
-                        lastCityBeaconsWereDownloadedFor = city
-                        lastBeaconsDownloadTime = DateTime.now()
                     }
                     .doOnError(::e)
         } else {

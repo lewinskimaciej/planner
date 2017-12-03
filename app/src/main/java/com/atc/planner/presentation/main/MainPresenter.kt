@@ -54,8 +54,8 @@ class MainPresenter @Inject constructor(private val stringProvider: StringProvid
             currentLocation?.let { location ->
                 val filterDetails = userDetailsRepository.getFilterDetails()
 
-                d { "getSightsNearby" }
-                placesRepository.getSightsNearby(location, filterDetails)
+                d { "getPlacesNearby" }
+                placesRepository.getPlacesNearby(location, filterDetails)
                         .subscribeOn(Schedulers.io())
                         .observeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
