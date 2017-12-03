@@ -46,42 +46,6 @@ class PlacesRepositoryImpl @Inject constructor(private val firebaseDatabaseDataS
                         d { "size BEFORE: ${it.size}" }
                         places = it
                     }
-//                    .toObservable()
-//                    .flatMapIterable { it }
-//                    .map { place ->
-//                        val originalPlace = place.copy()
-//                        place.targetsChildren = (0..10).random() == 0
-//                        if ((0..3).random() == 0) {
-//                            place.entryFee = (0..21).random().toFloat()
-//                        }
-//                        place.childrenFriendly = (0..3).random() < 3
-//                        place.hasSouvenirs = (0..3).random() == 0
-//                        place.hasView = (0..3).random() == 0
-//
-//                        val placeType = (0..4).random()
-//                        place.isArtGallery = false
-//                        place.isMuseum = false
-//                        place.isOutdoors = false
-//                        place.isPhysicalActivity = false
-//                        when (placeType) {
-//                            0 -> {
-//                                place.isArtGallery = true
-//                                place.isOutdoors = (0..20).random() == 0
-//                            }
-//                            1 -> place.isMuseum = true
-//                            2 -> place.isOutdoors = true
-//                            3 -> {
-//                                place.isPhysicalActivity = true
-//                                place.isOutdoors = (0..1).random() == 0
-//                            }
-//                        }
-//                        place.rating = ((0..100).random().toFloat() / 10f)
-//                        firebaseDatabaseDataSource.savePlace(place).subscribe({ d { "saved ${place.name}" } }, ::e)
-//
-//                        place
-//                    }
-//                    .toList()
-//                    .doOnSuccess { d { "size AFTER: ${it.size}" } }
         } else {
             Single.error(NoSuchElementException("City for these coordinates was not found"))
         }
