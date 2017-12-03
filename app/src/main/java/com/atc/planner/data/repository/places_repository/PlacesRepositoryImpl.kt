@@ -204,10 +204,10 @@ class PlacesRepositoryImpl @Inject constructor(private val firebaseDatabaseDataS
         attractiveness += this.rating * 3
 
         if (filterDetails?.hasSouvenirs == true) {
-            attractiveness += 10
+            attractiveness += 5
         }
         if (filterDetails?.childrenFriendly == true) {
-            attractiveness += 10
+            attractiveness += 5
         }
 
         return attractiveness
