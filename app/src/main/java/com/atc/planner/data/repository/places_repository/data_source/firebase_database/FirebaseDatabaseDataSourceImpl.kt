@@ -38,6 +38,7 @@ class FirebaseDatabaseDataSourceImpl @Inject constructor(private val firebaseFir
 
     override fun getPlaces(city: String, filterDetails: SightsFilterDetails?): Single<List<Place>> = Observable.create<Place> { emitter ->
         firebaseFirestore.collection("places")
+                .whereEqualTo("city", city)
                 .get()
                 .addOnSuccessListener {
                     it.forEach {
