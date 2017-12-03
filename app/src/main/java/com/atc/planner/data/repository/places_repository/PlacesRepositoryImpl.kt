@@ -157,21 +157,20 @@ class PlacesRepositoryImpl @Inject constructor(private val firebaseDatabaseDataS
         val placesToChooseFrom = ArrayList(places)
         val chosenPlaces: ArrayList<Place?> = arrayListOf()
 
-        var closesPlace: Place? = null  // point of origin
+        var closestPlace: Place? = null  // point of origin
         var closestPlaceDistance = Float.MAX_VALUE
         for (index in places.indices) {
             val distance = currentLocation.asLocation().distanceTo(places[index].location.asLatLng().asLocation())
             if (distance < closestPlaceDistance) {
-                closesPlace = places[index]
+                closestPlace = places[index]
                 closestPlaceDistance = distance
             }
         }
-        d { "getRoute first chosen" }
-        chosenPlaces.add(closesPlace)
-        placesToChooseFrom.remove(closesPlace)
-        var lastBestPlace = closesPlace
+
+        chosenPlaces.add(closestPlace)
+        placesToChooseFrom.remove(closestPlace)
+        var lastBestPlace = closestPlace
         for (count in 0..10) {
-            d { "getRoute choosing $count" }
             val tempPlace = lastBestPlace?.getHighestRatedClosePlace(filterDetails, placesToChooseFrom)
             lastBestPlace = tempPlace
             if (tempPlace != null) {
@@ -186,33 +185,30 @@ class PlacesRepositoryImpl @Inject constructor(private val firebaseDatabaseDataS
     private fun Place.getHighestRatedClosePlace(filterDetails: SightsFilterDetails?, placesToChooseFrom: ArrayList<Place>): Place? {
         var highestRatedPlace: Place? = null  // point of origin
         var highestRatedPlaceWeight = 0f
-//        d { "CHOSE ------------------------------ choosing best place for ${this.name}" }
         for (place in placesToChooseFrom) {
-            val placeWeight = place.attractiveness(this.location.asLatLng(), filterDetails, true, placesToChooseFrom)
-//            d { "CHOSE ${place.name} has weight of $placeWeight" }
+            val placeWeight = place.attractiveness(this.location.asLatLng(), filterDetails, placesToChooseFrom)
             if (placeWeight > highestRatedPlaceWeight) {
                 highestRatedPlace = place
                 highestRatedPlaceWeight = placeWeight
             }
         }
-//        d { "CHOSE chosen -------> ${highestRatedPlace?.name} attractiveness: $highestRatedPlaceWeight" }
         return highestRatedPlace
     }
 
-    private fun Place.attractiveness(currentLocation: LatLng, filterDetails: SightsFilterDetails?, countClosest: Boolean, placesToChooseFrom: ArrayList<Place>): Float {
-        var attractiveness: Float = this.rating * 2
-
-        if (filterDetails?.hasSouvenirs == true) {
-            attractiveness += 1
-        }
-        if (filterDetails?.childrenFriendly == true) {
-            attractiveness += 1
-        }
-
+    private fun Place.attractiveness(currentLocation: LatLng, filterDetails: SightsFilterDetails?, placesToChooseFrom: ArrayList<Place>): Float {
         val maxDistance = placesToChooseFrom.maximumDistanceFrom(this)
         val distance = this.location.asLatLng().asLocation().distanceTo(currentLocation.asLocation())
 
-        attractiveness += (maxDistance - distance) / 10
+        var attractiveness: Float = (maxDistance - distance) / 10
+
+        attractiveness += this.rating * 2
+
+        if (filterDetails?.hasSouvenirs == true) {
+            attractiveness += 5
+        }
+        if (filterDetails?.childrenFriendly == true) {
+            attractiveness += 10
+        }
 
 //        d {"${this.name} attr: $attractiveness distance: $distance maxDistance: $maxDistance"}
 
