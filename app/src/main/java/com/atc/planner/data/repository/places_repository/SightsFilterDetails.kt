@@ -1,4 +1,4 @@
-package com.atc.planner.data.repository.places_nearby_repository
+package com.atc.planner.data.repository.places_repository
 
 import com.atc.planner.data.model.BaseModel
 

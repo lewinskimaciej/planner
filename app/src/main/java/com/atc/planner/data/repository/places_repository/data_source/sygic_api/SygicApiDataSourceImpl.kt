@@ -1,4 +1,4 @@
-package com.atc.planner.data.repository.places_nearby_repository.data_source.sygic_api
+package com.atc.planner.data.repository.places_repository.data_source.sygic_api
 
 import android.content.res.Resources
 import com.atc.planner.data.model.remote.sygic_api.Category

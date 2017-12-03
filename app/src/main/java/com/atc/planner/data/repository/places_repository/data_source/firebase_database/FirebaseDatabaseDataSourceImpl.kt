@@ -1,8 +1,8 @@
-package com.atc.planner.data.repository.places_nearby_repository.data_source.firebase_database
+package com.atc.planner.data.repository.places_repository.data_source.firebase_database
 
 import com.atc.planner.data.model.local.Beacon
 import com.atc.planner.data.model.local.Place
-import com.atc.planner.data.repository.places_nearby_repository.SightsFilterDetails
+import com.atc.planner.data.repository.places_repository.SightsFilterDetails
 import com.atc.planner.extension.orZero
 import com.github.ajalt.timberkt.d
 import com.github.ajalt.timberkt.e

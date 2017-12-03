@@ -2,7 +2,7 @@ package com.atc.planner.data.repository.user_details_repository
 
 import android.content.SharedPreferences
 import com.atc.planner.data.model.local.Place
-import com.atc.planner.data.repository.places_nearby_repository.SightsFilterDetails
+import com.atc.planner.data.repository.places_repository.SightsFilterDetails
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import javax.inject.Inject

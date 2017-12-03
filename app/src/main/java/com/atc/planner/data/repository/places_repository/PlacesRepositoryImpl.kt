@@ -1,4 +1,4 @@
-package com.atc.planner.data.repository.places_nearby_repository
+package com.atc.planner.data.repository.places_repository
 
 import com.atc.planner.R
 import com.atc.planner.commons.CityProvider
@@ -10,8 +10,8 @@ import com.atc.planner.data.model.local.asPlaceCategory
 import com.atc.planner.data.model.remote.sygic_api.Category
 import com.atc.planner.data.model.remote.sygic_api.asCategory
 import com.atc.planner.data.remote_service.DirectionsRemoteService
-import com.atc.planner.data.repository.places_nearby_repository.data_source.firebase_database.FirebaseDatabaseDataSource
-import com.atc.planner.data.repository.places_nearby_repository.data_source.sygic_api.SygicApiDataSource
+import com.atc.planner.data.repository.places_repository.data_source.firebase_database.FirebaseDatabaseDataSource
+import com.atc.planner.data.repository.places_repository.data_source.sygic_api.SygicApiDataSource
 import com.atc.planner.extension.*
 import com.github.ajalt.timberkt.d
 import com.github.ajalt.timberkt.e
@@ -22,12 +22,12 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class PlacesNearbyRepositoryImpl @Inject constructor(private val firebaseDatabaseDataSource: FirebaseDatabaseDataSource,
-                                                     private val directionsRemoteService: DirectionsRemoteService,
-                                                     private val sygicApiDataSource: SygicApiDataSource,
-                                                     private val cityProvider: CityProvider,
-                                                     private val stringProvider: StringProvider)
-    : PlacesNearbyRepository {
+class PlacesRepositoryImpl @Inject constructor(private val firebaseDatabaseDataSource: FirebaseDatabaseDataSource,
+                                               private val directionsRemoteService: DirectionsRemoteService,
+                                               private val sygicApiDataSource: SygicApiDataSource,
+                                               private val cityProvider: CityProvider,
+                                               private val stringProvider: StringProvider)
+    : PlacesRepository {
 
     private var places: List<Place> = listOf()
 

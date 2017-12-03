@@ -4,8 +4,8 @@ import com.atc.planner.R
 import com.atc.planner.commons.LocationProvider
 import com.atc.planner.commons.StringProvider
 import com.atc.planner.data.model.local.Place
-import com.atc.planner.data.repository.places_nearby_repository.PlacesNearbyRepository
-import com.atc.planner.data.repository.places_nearby_repository.SightsFilterDetails
+import com.atc.planner.data.repository.places_repository.PlacesRepository
+import com.atc.planner.data.repository.places_repository.SightsFilterDetails
 import com.atc.planner.data.repository.user_details_repository.UserDetailsRepository
 import com.atc.planner.di.scopes.ActivityScope
 import com.atc.planner.extension.asLatLng
@@ -24,7 +24,7 @@ import javax.inject.Inject
 @ActivityScope
 class MainPresenter @Inject constructor(private val stringProvider: StringProvider,
                                         private val locationProvider: LocationProvider,
-                                        private val placesNearbyRepository: PlacesNearbyRepository,
+                                        private val placesRepository: PlacesRepository,
                                         private val userDetailsRepository: UserDetailsRepository)
     : BaseMvpPresenter<MainView>() {
 
@@ -55,7 +55,7 @@ class MainPresenter @Inject constructor(private val stringProvider: StringProvid
                 val filterDetails = userDetailsRepository.getFilterDetails()
 
                 d { "getSightsNearby" }
-                placesNearbyRepository.getSightsNearby(location, filterDetails)
+                placesRepository.getSightsNearby(location, filterDetails)
                         .subscribeOn(Schedulers.io())
                         .observeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -101,7 +101,7 @@ class MainPresenter @Inject constructor(private val stringProvider: StringProvid
                 .flatMapIterable { it }
                 .observeOn(Schedulers.io())
                 .flatMap { triple ->
-                    placesNearbyRepository.getDirections(triple.second, triple.third)
+                    placesRepository.getDirections(triple.second, triple.third)
                             .map { it.routes.first() }
                             .map { Pair(triple.first, decodePoly(it.overviewPolyline.points)) }
                             .toObservable()
@@ -115,7 +115,7 @@ class MainPresenter @Inject constructor(private val stringProvider: StringProvid
                 }, ::e)
     }
 
-    private fun computeRoute(currentLocation: LatLng, filterDetails: SightsFilterDetails?) = placesNearbyRepository.getRoute(currentLocation, filterDetails)
+    private fun computeRoute(currentLocation: LatLng, filterDetails: SightsFilterDetails?) = placesRepository.getRoute(currentLocation, filterDetails)
             .subscribeOn(Schedulers.computation())
             .map {
                 it.removeAll { it == null }
@@ -132,7 +132,7 @@ class MainPresenter @Inject constructor(private val stringProvider: StringProvid
         userDetailsRepository.saveRoute(route)
     }
 /*
-   placesNearbyRepository.getRoute(it[0]?.location.asLatLng(), it[1]?.location.asLatLng()).toObservable()
+   placesRepository.getRoute(it[0]?.location.asLatLng(), it[1]?.location.asLatLng()).toObservable()
                 .map { it.routes.first() }
                 .map { decodePoly(it.overviewPolyline.points) }
  */

@@ -4,7 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.view.MenuItem
 import com.atc.planner.R
-import com.atc.planner.data.repository.places_nearby_repository.SightsFilterDetails
+import com.atc.planner.data.repository.places_repository.SightsFilterDetails
 import com.atc.planner.extension.orFalse
 import com.atc.planner.extension.orZero
 import com.atc.planner.extension.setupToolbarWithUpNavigation

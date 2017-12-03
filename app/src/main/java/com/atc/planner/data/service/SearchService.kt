@@ -14,7 +14,7 @@ import com.atc.planner.R
 import com.atc.planner.commons.LocationProvider
 import com.atc.planner.data.model.local.BeaconSeenEvent
 import com.atc.planner.data.model.local.Place
-import com.atc.planner.data.repository.places_nearby_repository.PlacesNearbyRepository
+import com.atc.planner.data.repository.places_repository.PlacesRepository
 import com.atc.planner.extension.asLatLng
 import com.atc.planner.extension.asLatLong
 import com.atc.planner.extension.distanceTo
@@ -41,7 +41,7 @@ class SearchService : DaggerService(), LocationListener, BeaconConsumer {
     @Inject
     lateinit var locationProvider: LocationProvider
     @Inject
-    lateinit var placesNearbyRepository: PlacesNearbyRepository
+    lateinit var placesRepository: PlacesRepository
     @Inject
     lateinit var beaconManager: BeaconManager
 
@@ -141,14 +141,14 @@ class SearchService : DaggerService(), LocationListener, BeaconConsumer {
         if (latLong != null) {
             if (sightsNearby.isEmpty()) {
                 d { "getSightsNearby" }
-                sightsNearby = placesNearbyRepository.getLocallySavedSightsNearby()
+                sightsNearby = placesRepository.getLocallySavedSightsNearby()
                 checkIfCloseToPlaceByLocation(latLong)
             } else {
                 checkIfCloseToPlaceByLocation(latLong)
             }
 
             if (beaconsNearby.isEmpty()) {
-                placesNearbyRepository.getBeaconsNearby(latLong)
+                placesRepository.getBeaconsNearby(latLong)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe({ beaconsNearby = it }, ::e)
