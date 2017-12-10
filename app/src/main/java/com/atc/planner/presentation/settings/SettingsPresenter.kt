@@ -8,11 +8,13 @@ import javax.inject.Inject
 
 class SettingsPresenter @Inject constructor(private val userDetailsRepository: UserDetailsRepository) : BaseMvpPresenter<SettingsView>() {
 
+    private var originalFilterDetails: SightsFilterDetails? = null
     private var filterDetails: SightsFilterDetails? = null
 
     override fun onViewCreated(data: Serializable?) {
         if (filterDetails == null) {
             filterDetails = userDetailsRepository.getFilterDetails()
+            originalFilterDetails = filterDetails?.copy()
         }
 
         view?.setUpValues(filterDetails)
@@ -45,6 +47,10 @@ class SettingsPresenter @Inject constructor(private val userDetailsRepository: U
     fun onMaxEntryFeeChanges(newMaxEntryFee: Float) {
         filterDetails?.maxEntryFee = newMaxEntryFee
         updateFilterDetails()
+    }
+
+    fun end() {
+        view?.endWithResult(originalFilterDetails?.equals(filterDetails) == false)
     }
 
 }

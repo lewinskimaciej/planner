@@ -17,7 +17,7 @@ import com.atc.planner.data.model.local.Place
 import com.atc.planner.data.repository.places_repository.PlacesRepository
 import com.atc.planner.data.repository.user_details_repository.UserDetailsRepository
 import com.atc.planner.extension.asLatLng
-import com.atc.planner.extension.asLatLong
+import com.atc.planner.extension.toLatLong
 import com.atc.planner.extension.distanceTo
 import com.atc.planner.presentation.base.BaseDictionary
 import com.atc.planner.presentation.place_details.PlaceDetailsActivity
@@ -141,7 +141,7 @@ class SearchService : DaggerService(), LocationListener, BeaconConsumer {
 
     override fun onLocationChanged(p0: Location?) {
         d { "onLocationChanged $p0" }
-        val latLong = p0?.asLatLong()
+        val latLong = p0?.toLatLong()
         if (latLong != null) {
             if (sightsNearby.isEmpty()) {
                 d { "getPlacesNearby" }

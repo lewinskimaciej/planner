@@ -8,7 +8,7 @@ import com.atc.planner.commons.StringProvider
 import com.atc.planner.data.model.local.Place
 import com.atc.planner.di.scopes.FragmentScope
 import com.atc.planner.extension.asLatLng
-import com.atc.planner.extension.asLatLong
+import com.atc.planner.extension.toLatLong
 import com.atc.planner.presentation.base.BaseMvpPresenter
 import com.atc.planner.presentation.place_details.PlaceDetailsBundle
 import com.github.ajalt.timberkt.Timber.e
@@ -28,10 +28,6 @@ class MapPresenter @Inject constructor(private val stringProvider: StringProvide
                                        private val locationProvider: LocationProvider,
                                        private var bitmapProvider: BitmapProvider)
     : BaseMvpPresenter<MapView>(), LocationListener {
-
-    companion object {
-        private val defaultLocation = LatLng(51.108964, 17.060151)
-    }
 
     private var currentLocation: LatLng? = null
     private var isMapReady = false
@@ -58,21 +54,19 @@ class MapPresenter @Inject constructor(private val stringProvider: StringProvide
     fun onMapReady() {
         isMapReady = true
 
+        checkCurrentLocation()
+    }
+
+    private fun checkCurrentLocation() {
         locationProvider.getLastLocation({
-            currentLocation = it?.asLatLong()
+            currentLocation = it?.toLatLong()
             showCurrentLocation()
             locationProvider.addListener(this)
-        }, {
-            it.let {
-                e(it)
-                view?.showErrorToast()
-                showDefaultLocation()
-            }
-        })
+        }, ::e)
     }
 
     override fun onLocationChanged(p0: Location?) {
-        currentLocation = p0?.asLatLong()
+        currentLocation = p0?.toLatLong()
         showCurrentLocation()
     }
 
@@ -82,13 +76,7 @@ class MapPresenter @Inject constructor(private val stringProvider: StringProvide
                 view?.showCurrentLocation(it)
                 view?.zoomToFitAllMarkers()
             }
-        } else {
-            showDefaultLocation()
         }
-    }
-
-    private fun showDefaultLocation() {
-        view?.showCurrentLocation(defaultLocation)
     }
 
     fun onSetData(items: List<Place>) {
@@ -133,6 +121,7 @@ class MapPresenter @Inject constructor(private val stringProvider: StringProvide
                     .subscribe({ (markerOptions, place) ->
                         view?.addMarker(markerOptions, place)
                     }, ::e, {
+                        checkCurrentLocation()
                         view?.zoomToFitAllMarkers()
                     })
         }

@@ -17,4 +17,5 @@ interface MapView : BaseView {
     fun goToPlaceDetails(placeDetailsBundle: PlaceDetailsBundle)
     fun drawPolyline(polyline: List<LatLng>)
     fun highlightMarker(place: Place?)
+    fun clearPolyline()
 }

@@ -4,8 +4,6 @@ import com.atc.planner.data.repository.places_repository.PlacesRepository
 import com.atc.planner.data.repository.places_repository.PlacesRepositoryImpl
 import com.atc.planner.data.repository.places_repository.data_source.firebase_database.FirebaseDatabaseDataSource
 import com.atc.planner.data.repository.places_repository.data_source.firebase_database.FirebaseDatabaseDataSourceImpl
-import com.atc.planner.data.repository.places_repository.data_source.sygic_api.SygicApiDataSource
-import com.atc.planner.data.repository.places_repository.data_source.sygic_api.SygicApiDataSourceImpl
 import com.atc.planner.data.repository.user_details_repository.UserDetailsRepository
 import com.atc.planner.data.repository.user_details_repository.UserDetailsRepositoryImpl
 import dagger.Binds
@@ -13,9 +11,6 @@ import dagger.Module
 
 @Module
 abstract class RepositoryModule {
-
-    @Binds
-    abstract fun bindSygicApiDataSource(sygicApiDataSource: SygicApiDataSourceImpl): SygicApiDataSource
 
     @Binds
     abstract fun bindFirebaseDatabaseDataSource(firebaseDatabaseDataSource: FirebaseDatabaseDataSourceImpl): FirebaseDatabaseDataSource

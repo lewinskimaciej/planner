@@ -30,6 +30,7 @@ class MapFragment : BaseMvpFragment<MapView, MapPresenter>(), MapView, OnMapRead
     private var map: GoogleMap? = null
     private var usersLocationMarker: Marker? = null
     private var currentItems: HashMap<Marker?, Place> = hashMapOf()
+    private var currentPolylines: ArrayList<Polyline?> = arrayListOf()
 
     override fun createPresenter(): MapPresenter = mapPresenter
 
@@ -84,7 +85,7 @@ class MapFragment : BaseMvpFragment<MapView, MapPresenter>(), MapView, OnMapRead
     }
 
     override fun clearMarkers() {
-        map?.clear()
+        currentItems.forEach { it.key?.remove() }
     }
 
     override fun addMarker(options: MarkerOptions?, place: Place) {
@@ -114,10 +115,15 @@ class MapFragment : BaseMvpFragment<MapView, MapPresenter>(), MapView, OnMapRead
         polyline.forEach { options.add(it) }
         options.width(12f)
         options.color(Color.parseColor("#05b1fb"))
-        map?.addPolyline(options)
+        val addedPolyline = map?.addPolyline(options)
+        currentPolylines.add(addedPolyline)
     }
 
     override fun highlightMarker(place: Place?) {
         // todo
+    }
+
+    override fun clearPolyline() {
+        currentPolylines.forEach { it?.remove() }
     }
 }

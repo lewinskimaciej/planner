@@ -4,18 +4,11 @@ import com.atc.planner.R
 import com.atc.planner.commons.CityProvider
 import com.atc.planner.commons.StringProvider
 import com.atc.planner.data.model.local.Beacon
-import com.atc.planner.data.model.local.DataSource
 import com.atc.planner.data.model.local.Place
-import com.atc.planner.data.model.local.asPlaceCategory
-import com.atc.planner.data.model.remote.sygic_api.Category
-import com.atc.planner.data.model.remote.sygic_api.asCategory
 import com.atc.planner.data.remote_service.DirectionsRemoteService
 import com.atc.planner.data.repository.places_repository.data_source.firebase_database.FirebaseDatabaseDataSource
-import com.atc.planner.data.repository.places_repository.data_source.sygic_api.SygicApiDataSource
 import com.atc.planner.extension.asLatLng
-import com.atc.planner.extension.asLatLong
 import com.atc.planner.extension.asLocation
-import com.atc.planner.extension.random
 import com.github.ajalt.timberkt.d
 import com.github.ajalt.timberkt.e
 import com.google.android.gms.maps.model.LatLng
@@ -26,7 +19,6 @@ import javax.inject.Singleton
 @Singleton
 class PlacesRepositoryImpl @Inject constructor(private val firebaseDatabaseDataSource: FirebaseDatabaseDataSource,
                                                private val directionsRemoteService: DirectionsRemoteService,
-                                               private val sygicApiDataSource: SygicApiDataSource,
                                                private val cityProvider: CityProvider,
                                                private val stringProvider: StringProvider)
     : PlacesRepository {
@@ -52,84 +44,6 @@ class PlacesRepositoryImpl @Inject constructor(private val firebaseDatabaseDataS
 
     override fun getPlaceByAreaId(areaId: String?): Single<Place> =
             firebaseDatabaseDataSource.getPlaceByAreaId(areaId)
-
-    override fun getPlacesFromSygic(latLng: LatLng): Single<List<Place>> {
-        return sygicApiDataSource.getPlaces(latLng, 10000, listOf(Category.SIGHTSEEING, Category.EATING, Category.DISCOVERING))
-                .toObservable()
-                .flatMapIterable { it }
-                .map { it.id.orEmpty() }
-                .toList()
-                .flatMap { sygicApiDataSource.getPlacesDetailed(it) }
-                .toObservable()
-                .flatMapIterable { it }
-                .map {
-                    val description = if (it.detail != null) {
-                        it.detail?.description?.text
-                    } else {
-                        if (!it.perex.isNullOrEmpty()) {
-                            it.perex
-                        } else {
-                            it.nameSuffix
-                        }
-                    }
-
-                    val photos = it.detail
-                            ?.mainMedia
-                            ?.media
-                            .orEmpty()
-                            .filter { "photo" == it.type }
-                            .map { it.url }
-
-                    val localPlace = Place(it.id,
-                            it.level,
-                            "Wrocław",
-                            it.categories?.map { it.asCategory().asPlaceCategory() },
-                            it.rating,
-                            it.location.asLatLong(),
-                            it.name,
-                            it.nameSuffix,
-                            description,
-                            it.url,
-                            it.thumbnailUrl,
-                            it.detail?.openingHours,
-                            photos,
-                            DataSource.SYGIC)
-
-                    localPlace.targetsChildren = (0..10).random() == 0
-                    if ((0..3).random() == 0) {
-                        localPlace.entryFee = (0..21).random().toFloat()
-                    }
-                    localPlace.childrenFriendly = (0..3).random() < 3
-                    localPlace.hasSouvenirs = (0..3).random() == 0
-                    localPlace.hasView = (0..3).random() == 0
-
-                    val placeType = (0..4).random()
-                    localPlace.isArtGallery = false
-                    localPlace.isMuseum = false
-                    localPlace.isOutdoors = false
-                    localPlace.isPhysicalActivity = false
-                    when (placeType) {
-                        0 -> {
-                            localPlace.isArtGallery = true
-                            localPlace.isOutdoors = (0..20).random() == 0
-                        }
-                        1 -> localPlace.isMuseum = true
-                        2 -> localPlace.isOutdoors = true
-                        3 -> {
-                            localPlace.isPhysicalActivity = true
-                            localPlace.isOutdoors = (0..1).random() == 0
-                        }
-                    }
-                    localPlace.rating = ((0..100).random().toFloat() / 10f)
-
-                    localPlace
-                }
-                .filter { it.photos.orEmpty().isNotEmpty() && !it.description.isNullOrEmpty() }
-                .doOnNext { place ->
-                    firebaseDatabaseDataSource.savePlace(place).subscribe({ d { "saved ${place.name}" } }, ::e)
-                }
-                .toList()
-    }
 
     override fun getBeaconsNearby(latLng: LatLng): Single<List<Beacon>> {
         if (beaconsNearby.isNotEmpty()) {

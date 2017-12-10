@@ -1,5 +1,6 @@
 package com.atc.planner.presentation.main
 
+import android.location.Location
 import com.atc.planner.R
 import com.atc.planner.commons.LocationProvider
 import com.atc.planner.commons.StringProvider
@@ -9,11 +10,12 @@ import com.atc.planner.data.repository.places_repository.SightsFilterDetails
 import com.atc.planner.data.repository.user_details_repository.UserDetailsRepository
 import com.atc.planner.di.scopes.ActivityScope
 import com.atc.planner.extension.asLatLng
-import com.atc.planner.extension.asLatLong
 import com.atc.planner.extension.orZero
+import com.atc.planner.extension.toLatLong
 import com.atc.planner.presentation.base.BaseMvpPresenter
 import com.github.ajalt.timberkt.d
 import com.github.ajalt.timberkt.e
+import com.google.android.gms.location.LocationListener
 import com.google.android.gms.maps.model.LatLng
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -26,34 +28,39 @@ class MainPresenter @Inject constructor(private val stringProvider: StringProvid
                                         private val locationProvider: LocationProvider,
                                         private val placesRepository: PlacesRepository,
                                         private val userDetailsRepository: UserDetailsRepository)
-    : BaseMvpPresenter<MainView>() {
+    : BaseMvpPresenter<MainView>(), LocationListener {
 
     private var currentLocation: LatLng? = null
     private var lastRefreshDate: Long? = null
-    private var count: Int = 0
 
     override fun onViewCreated(data: Serializable?) {
         view?.askForLocationPermission()
     }
 
+    override fun onLocationChanged(p0: Location?) {
+        currentLocation = p0?.toLatLong()
+    }
+
     fun onPermissionsGranted() {
         d { "onPermissionsGranted" }
         locationProvider.getLastLocation({
-            currentLocation = it?.asLatLong()
+            currentLocation = it?.toLatLong()
 
-            getPlacesNearby()
+            getPlacesNearby(false)
 
         }, {
             e(it)
         })
+        locationProvider.addListener(this)
         locationProvider.startService()
     }
 
-    private fun getPlacesNearby() {
+    private fun getPlacesNearby(refresh: Boolean) {
         if (lastRefreshDate == null || System.currentTimeMillis() - lastRefreshDate.orZero() > 2000) {
             currentLocation?.let { location ->
                 val filterDetails = userDetailsRepository.getFilterDetails()
 
+                view?.setLoaderVisibility(true)
                 d { "getPlacesNearby" }
                 placesRepository.getPlacesNearby(location, filterDetails)
                         .subscribeOn(Schedulers.io())
@@ -62,8 +69,9 @@ class MainPresenter @Inject constructor(private val stringProvider: StringProvid
                         .subscribe({
                             d { "got ${it.size} items" }
                             view?.setItems(it)
-                            resolveRoute()
+                            resolveRoute(refresh)
                         }, {
+                            view?.setLoaderVisibility(false)
                             if (it is NoSuchElementException) {
                                 view?.showAlertDialog(stringProvider.getString(R.string.geocoder_encountered_a_problem),
                                         stringProvider.getString(R.string.try_rebooting_your_device))
@@ -77,26 +85,29 @@ class MainPresenter @Inject constructor(private val stringProvider: StringProvid
         }
     }
 
-    private fun resolveRoute() {
-        val existingRoute = userDetailsRepository.getRoute()
-        if (existingRoute.isNotEmpty()) {
-            getRoute(Single.just(existingRoute))
-        } else {
-            currentLocation?.let { location ->
-                val filterDetails = userDetailsRepository.getFilterDetails()
-                getRoute(computeRoute(location, filterDetails))
+    private fun resolveRoute(refresh: Boolean) {
+        if (!refresh) {
+            val existingRoute = userDetailsRepository.getRoute()
+            if (existingRoute.isNotEmpty()) {
+                getRoute(Single.just(existingRoute))
+                return
             }
         }
+        currentLocation?.let { location ->
+            val filterDetails = userDetailsRepository.getFilterDetails()
+            getRoute(computeRoute(location, filterDetails))
+        }
+
     }
 
     private fun getRoute(source: Single<List<Place?>>) {
-        source.map { locations ->
+        source.map { places ->
             val triples: ArrayList<Triple<Place?, LatLng, LatLng>> = arrayListOf()
-                    for (i in 0..(locations.size - 2)) {
-                        triples.add(Triple(locations[i], locations[i]?.location.asLatLng(), locations[i + 1]?.location.asLatLng()))
-                    }
+            for (i in 0..(places.size - 2)) {
+                triples.add(Triple(places[i], places[i]?.location.asLatLng(), places[i + 1]?.location.asLatLng()))
+            }
             triples
-                }
+        }
                 .toObservable()
                 .flatMapIterable { it }
                 .observeOn(Schedulers.io())
@@ -112,13 +123,19 @@ class MainPresenter @Inject constructor(private val stringProvider: StringProvid
                     view?.addPolyline(it.second)
                     d { "addedPolyline" }
                     view?.highlightMarker(it.first)
-                }, ::e)
+                }, {
+                    e(it)
+                    view?.setLoaderVisibility(false)
+                }, {
+                    view?.setLoaderVisibility(false)
+                })
     }
 
     private fun computeRoute(currentLocation: LatLng, filterDetails: SightsFilterDetails?) = placesRepository.getRoute(currentLocation, filterDetails)
             .subscribeOn(Schedulers.computation())
             .map {
                 it.removeAll { it == null }
+                it.add(0, Place(location = currentLocation.toLatLong()))
                 it
             }
             .toObservable()
@@ -131,11 +148,6 @@ class MainPresenter @Inject constructor(private val stringProvider: StringProvid
     private fun saveRouteLocally(route: List<Place?>) {
         userDetailsRepository.saveRoute(route)
     }
-/*
-   placesRepository.getRoute(it[0]?.location.asLatLng(), it[1]?.location.asLatLng()).toObservable()
-                .map { it.routes.first() }
-                .map { decodePoly(it.overviewPolyline.points) }
- */
 
     fun onPermissionsRefused() {
         d { "onPermissionsRefused" }
@@ -187,6 +199,8 @@ class MainPresenter @Inject constructor(private val stringProvider: StringProvid
     }
 
     fun requestRefresh() {
-//        getPlacesNearby()
+        view?.clearPolyline()
+        view?.clearMarkers()
+        getPlacesNearby(true)
     }
 }

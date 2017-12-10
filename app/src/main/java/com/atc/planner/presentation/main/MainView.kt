@@ -10,4 +10,7 @@ interface MainView : BaseView {
     fun addItems(items: List<Place>)
     fun addPolyline(polyline: List<LatLng>)
     fun highlightMarker(place: Place?)
+    fun clearPolyline()
+    fun clearMarkers()
+    fun setLoaderVisibility(visible: Boolean)
 }

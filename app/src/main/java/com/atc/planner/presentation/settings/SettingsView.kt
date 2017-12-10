@@ -5,4 +5,5 @@ import com.atc.planner.presentation.base.BaseView
 
 interface SettingsView : BaseView {
     fun setUpValues(filterDetails: SightsFilterDetails?)
+    fun endWithResult(changed: Boolean)
 }

@@ -1,14 +1,14 @@
 package com.atc.planner.presentation.settings
 
-import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.support.v4.app.FragmentActivity
 import android.view.MenuItem
 import com.atc.planner.R
 import com.atc.planner.data.repository.places_repository.SightsFilterDetails
 import com.atc.planner.extension.orFalse
 import com.atc.planner.extension.orZero
 import com.atc.planner.extension.setupToolbarWithUpNavigation
-import com.atc.planner.extension.startActivity
 import com.atc.planner.presentation.base.BaseMvpActivity
 import com.github.ajalt.timberkt.e
 import com.jakewharton.rxbinding2.widget.checkedChanges
@@ -30,8 +30,10 @@ class SettingsActivity : BaseMvpActivity<SettingsView, SettingsPresenter>(), Set
         get() = R.layout.activity_settings
 
     companion object {
-        fun start(from: Context) {
-            from.startActivity(SettingsActivity::class)
+        const val CHANGED_KEY = "changed"
+        fun start(from: FragmentActivity) {
+            val intent = Intent(from, SettingsActivity::class.java)
+            from.startActivityForResult(intent, 1337)
         }
     }
 
@@ -43,12 +45,24 @@ class SettingsActivity : BaseMvpActivity<SettingsView, SettingsPresenter>(), Set
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         android.R.id.home -> {
-            super.onBackPressed()
+            presenter?.end()
             true
         }
         else -> true
     }
 
+    override fun onBackPressed() {
+        presenter?.end()
+    }
+
+    override fun endWithResult(changed: Boolean) {
+        val intent = Intent()
+        val bundle = Bundle()
+        bundle.putBoolean(CHANGED_KEY, changed)
+        intent.putExtras(bundle)
+        setResult(1337, intent)
+        this.finish()
+    }
 
     private fun bindViews() {
         i_am_a_child_checkbox.checkedChanges()
