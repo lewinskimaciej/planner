@@ -43,13 +43,15 @@ class PlacesRepositoryImpl @Inject constructor(private val firebaseDatabaseDataS
         return if (city != null) {
             firebaseDatabaseDataSource.getPlaces(city, filterDetails)
                     .doOnSuccess {
-                        d { "size BEFORE: ${it.size}" }
                         places = it
                     }
         } else {
             Single.error(NoSuchElementException("City for these coordinates was not found"))
         }
     }
+
+    override fun getPlaceByAreaId(areaId: String?): Single<Place> =
+            firebaseDatabaseDataSource.getPlaceByAreaId(areaId)
 
     override fun getPlacesFromSygic(latLng: LatLng): Single<List<Place>> {
         return sygicApiDataSource.getPlaces(latLng, 10000, listOf(Category.SIGHTSEEING, Category.EATING, Category.DISCOVERING))

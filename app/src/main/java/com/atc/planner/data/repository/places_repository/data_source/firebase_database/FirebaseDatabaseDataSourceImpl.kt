@@ -92,4 +92,22 @@ class FirebaseDatabaseDataSourceImpl @Inject constructor(private val firebaseFir
                     emitter.onError(it)
                 }
     }.toList()
+
+    override fun getPlaceByAreaId(areaId: String?): Single<Place> = Single.create<Place> { emitter ->
+        firebaseFirestore.collection("places")
+                .whereEqualTo("areaId", areaId)
+                .get()
+                .addOnSuccessListener {
+                    val documentSnapshot = it.firstOrNull()
+                    if (documentSnapshot != null) {
+                        val place = gson.fromJson<Place>(gson.toJson(documentSnapshot.data), Place::class.java)
+                        emitter.onSuccess(place)
+                    } else {
+                        emitter.onError(NoSuchElementException("There's no place assigned to that area"))
+                    }
+                }
+                .addOnFailureListener {
+                    emitter.onError(it)
+                }
+    }
 }

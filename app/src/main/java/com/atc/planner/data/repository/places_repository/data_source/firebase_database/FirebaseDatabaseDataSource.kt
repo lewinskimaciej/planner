@@ -12,4 +12,5 @@ interface FirebaseDatabaseDataSource {
     fun removePlace(place: Place): Completable
     fun getPlaces(city: String, filterDetails: SightsFilterDetails? = null): Single<List<Place>>
     fun getBeaconsNearby(city: String): Single<List<Beacon>>
+    fun getPlaceByAreaId(areaId: String?): Single<Place>
 }

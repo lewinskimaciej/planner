@@ -1,6 +1,7 @@
 package com.atc.planner.data.repository.user_details_repository
 
 import android.content.SharedPreferences
+import com.atc.planner.data.model.local.BeaconSeenEvent
 import com.atc.planner.data.model.local.Place
 import com.atc.planner.data.repository.places_repository.SightsFilterDetails
 import com.google.gson.Gson
@@ -29,5 +30,15 @@ class UserDetailsRepositoryImpl @Inject constructor(private val sharedPreference
     override fun getRoute(): List<Place?> {
         val json = sharedPreferences.getString("route", gson.toJson(listOf<Place?>()))
         return gson.fromJson(json, object : TypeToken<List<Place?>>() {}.type)
+    }
+
+    override fun saveSeenBeacons(beacons: List<BeaconSeenEvent?>) {
+        val json = gson.toJson(beacons)
+        sharedPreferences.edit().putString("seenBeacons", json).apply()
+    }
+
+    override fun getSeenBeacons(): List<BeaconSeenEvent?> {
+        val json = sharedPreferences.getString("seenBeacons", gson.toJson(listOf<BeaconSeenEvent?>()))
+        return gson.fromJson(json, object : TypeToken<List<BeaconSeenEvent?>>() {}.type)
     }
 }
